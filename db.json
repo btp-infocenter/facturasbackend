@@ -1,0 +1,5 @@
+{
+    "kind": "sqlite",
+    "name": "my-database",
+    "location": "./db/my-database.db"
+}

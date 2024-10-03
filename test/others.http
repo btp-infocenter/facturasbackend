@@ -1,0 +1,2 @@
+### GET SPECIFIC PHOTO
+GET  {{baseUrl}}/service/facturasbackendService/Fotos(a4daccb1-46cf-4d32-acac-09b57061081b)

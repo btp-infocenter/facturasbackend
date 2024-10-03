@@ -1,0 +1,94 @@
+@baseUrl = http://localhost:4004
+@datoAG = 6eaf9905-9f8a-48af-998b-908587ef7100
+@imgP =  d5a5d07c-a193-4e59-98de-7d36557a35e8
+@imgNP = b585cf8b-03be-451d-9ddb-1042ecfed915
+
+### GETTERS ###
+### GET ALL PHOTOS
+GET {{baseUrl}}/service/facturasbackendService/Fotos
+
+
+### GET IMAGEN
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{photoNAG}})
+
+
+### GET ALL DATA
+GET {{baseUrl}}/service/facturasbackendService/Datos
+
+
+### SETTERS ###
+### SEND PHOTO
+# @name newPhoto
+POST {{baseUrl}}/service/facturasbackendService/Fotos
+Content-Type: application/json
+
+{
+    
+}
+
+###
+@photoNAG = {{newPhoto.response.body.$.ID}}
+
+
+### ADD DATA
+# @name newData
+POST {{baseUrl}}/service/facturasbackendService/Datos
+Content-Type: application/json
+
+{
+  "ruc": "MI RUC",
+  "fotos_ID": "{{photoNAG}}"
+  
+}
+
+###
+@datoNAG = {{newData.response.body.$.ID}}
+
+
+### UPDATE DATA
+PUT {{baseUrl}}/service/facturasbackendService/Datos({{datoNAG}})
+Content-Type: application/json
+
+{
+  "ruc": "Updated",
+  "fotos_ID": "{{photoNAG}}"
+}
+
+
+###
+GET {{baseUrl}}/service/uploadImagen/Fotos({{photoNAG}})
+
+
+### DELETE DATE
+DELETE {{baseUrl}}/service/facturasbackendService/Datos({{datoAG}})
+
+
+###
+GET {{baseUrl}}/service/uploadImagen/$metadata
+
+### FUNCTIONS ###
+### Send to B1
+POST {{baseUrl}}/service/facturasbackendService/Datos({{datoNAG}})/facturasbackendService.enviar
+Content-Type: application/json
+
+{ 
+  
+}
+
+
+### Upload Fotos
+POST {{baseUrl}}/service/uploadPhoto/Fotos({{photoNAG}})/uploadPhoto.upload
+Content-Type: application/json
+
+{
+  "imagen": "parte3"
+}
+
+
+### Procesar DOX
+POST {{baseUrl}}/service/uploadPhoto/Fotos({{photoNAG}})/uploadPhoto.dox
+Content-Type: application/json
+
+{
+  
+}

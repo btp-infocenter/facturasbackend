@@ -1,0 +1,21 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.facturasUser",
+      "description": "facturasUser"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "facturasUser",
+      "description": "",
+      "scope-references": [
+        "$XSAPPNAME.facturasUser"
+      ],
+      "attribute-references": []
+    }
+  ],
+  "xsappname": "facturasbackend",
+  "tenant-mode": "dedicated"
+}
