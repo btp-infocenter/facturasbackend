@@ -13,28 +13,28 @@ const reset_Enviado = require('./code/reset-enviado');
 
 class facturasbackendService extends LCAPApplicationService {
     async init() {
-        this.before(['CREATE', 'DELETE', 'UPDATE'], 'Datos', async (request) => {
+        this.before(['CREATE', 'DELETE', 'UPDATE'], 'DatosHeader', async (request) => {
             await check_Procesado(request);
         });
 
-        this.on(['DELETE', 'UPDATE'], 'Datos', async (request, next) => {
+        this.on(['DELETE', 'UPDATE'], 'DatosHeader', async (request, next) => {
             await check_Ac_Enviado(request);
             return next();
         });
 
-        this.on('enviar', 'Datos', async (request, next) => {
+        this.on('enviar', 'DatosHeader', async (request, next) => {
             return enviar_Logic(request);
         });
 
-        this.before('enviar', 'Datos', async (request) => {
+        this.before('enviar', 'DatosHeader', async (request) => {
             await check_Enviado(request);
         });
 
-        this.after('enviar', 'Datos', async (results, request) => {
+        this.after('enviar', 'DatosHeader', async (results, request) => {
             await set_Enviado(results, request);
         });
 
-        this.after('CREATE', 'Datos', async (results, request) => {
+        this.after('CREATE', 'DatosHeader', async (results, request) => {
             await reset_Enviado(results, request);
         });
 

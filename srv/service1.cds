@@ -22,3 +22,8 @@ annotate uploadPhoto with @restrict :
 [
     { grant : [ '*' ], to : [ 'facturasUser' ] }
 ];
+
+annotate my.Fotos with {
+    imagen @cap_dox;
+};
+

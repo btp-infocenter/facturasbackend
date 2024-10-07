@@ -1,0 +1,12 @@
+{
+    "version": "2.0",
+    "codes": [],
+    "configuration": {
+        "phase": "before",
+        "events": [
+            "dox"
+        ],
+        "entity": "uploadPhoto.Fotos"
+    },
+    "hash": "5a12073042e69fca097110cde1b4c5124a18912633d5b5de584bf36dd6bb24f1c1e317cc01f17198fa152d46b4eced4e1daef62acabe16aecc752292c6c98f1e"
+}

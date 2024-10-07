@@ -13,18 +13,40 @@ entity Fotos : cuid, managed
     mimetype : String(10);
     enviado : Boolean default false;
     procesado : Boolean default false;
-    datos : Association to many Datos on datos.fotos = $self;
+    datos : Association to many DatosHeader on datos.fotos = $self;
 }
 
-entity Datos : cuid, managed
+entity DatosHeader : cuid, managed
 {
-    timbrado : String(100);
-    ruc : String(50);
-    receptor : String(100);
-    emisor : String(100);
-    total : Decimal;
+    status : String(10) not null;
+    doxId : String(100);
+    nombreRemitente : Field;
+    rucRemitente : Field;
+    timbrado : Field;
     autoCreado : Boolean default false;
     enviado : Boolean default false;
-    fotos : Association to one Fotos
-        @assert.target;
+    fotos : Association to one Fotos;
+    items : Composition of many DatosItems on items.datosHeader = $self;
+}
+
+entity DatosItems : cuid, managed
+{
+    descripcion : Field;
+    precioUnitario : Field;
+    datosHeader : Association to one DatosHeader;
+}
+
+type Coordinates
+{
+    x : Decimal;
+    y : Decimal;
+    w : Decimal;
+    h : Decimal;
+}
+
+type Field
+{
+    value : String(100);
+    confidence : Decimal;
+    coordinates : Coordinates;
 }

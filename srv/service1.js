@@ -4,7 +4,9 @@
  */
 const LCAPApplicationService = require('@sap/low-code-event-handler');
 const add_Imagen = require('./code/add-imagen');
+const check_Foto_Procesado = require('./code/check-foto-procesado');
 const dOX = require('./code/dOX');
+const set_Procesado = require('./code/set-procesado');
 
 class uploadPhoto extends LCAPApplicationService {
     async init() {
@@ -13,8 +15,16 @@ class uploadPhoto extends LCAPApplicationService {
             return add_Imagen(request);
         });
 
+        this.before('dox', 'Fotos', async (request) => {
+            await check_Foto_Procesado(request);
+        });
+
         this.on('dox', 'Fotos', async (request, next) => {
             return dOX(request);
+        });
+
+        this.after('dox', 'Fotos', async (results, request) => {
+            await set_Procesado(results, request);
         });
 
         return super.init();

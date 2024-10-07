@@ -19,6 +19,9 @@
         "hdb": "^0.19.9",
         "passport": "^0.7.0"
     },
+    "workspaces": [
+        "cap_dox"
+    ],
     "devDependencies": {
         "@cap-js/cds-types": "^0.6",
         "@cap-js/sqlite": "^1.7.3",
@@ -69,6 +72,14 @@
         },
         "features": {
             "fetch_csrf": true
+        },
+        "cap_dox_key": {
+            "endpoints": {
+                "backend": {
+                    "url": "https://aiservices-trial-dox.cfapps.us10.hana.ondemand.com"
+                }
+            },
+            "swagger": "/document-information-extraction/v1/"
         }
     },
     "lcap": true

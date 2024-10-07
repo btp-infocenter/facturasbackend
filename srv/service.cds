@@ -3,7 +3,12 @@ using { facturasbackend as my } from '../db/schema.cds';
 @path : '/service/facturasbackendService'
 service facturasbackendService
 {
-    annotate Datos with @restrict :
+    annotate DatosHeader with @restrict :
+    [
+        { grant : [ '*' ], to : [ 'facturasUser' ] }
+    ];
+
+    annotate DatosItems with @restrict :
     [
         { grant : [ '*' ], to : [ 'facturasUser' ] }
     ];
@@ -17,13 +22,16 @@ service facturasbackendService
     entity Fotos as
         projection on my.Fotos;
 
-    entity Datos as
-        projection on my.Datos
+    entity DatosHeader as
+        projection on my.DatosHeader
         actions
         {
             action enviar
             (
             )
-            returns Datos;
+            returns DatosHeader;
         };
+
+    entity DatosItems as
+        projection on my.DatosItems;
 }

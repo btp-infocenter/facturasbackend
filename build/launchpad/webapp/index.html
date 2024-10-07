@@ -3,7 +3,6 @@
 
 <head>
     <title> Application Overview </title>
-    <script src="shared-config.js"></script>
     <script src="https://ui5.sap.com/1.120.17/resources/sap-ui-core.js" 
             id="sap-ui-bootstrap"
             data-sap-ui-theme="sap_horizon"
@@ -28,7 +27,7 @@
                     return Controller.extend("PreviewController", {
                         onInit: function () {
 
-                            const data = {"Services":[{"ServiceName":"facturasbackendService","DetailsURL":"./service/facturasbackendService/","Metadata":"./service/facturasbackendService/$metadata","Entities":[{"Name":"Fotos","URL":"./service/facturasbackendService/Fotos","FioriURL":""},{"Name":"Datos","URL":"./service/facturasbackendService/Datos","FioriURL":""}],"EntitiesCount":2},{"ServiceName":"uploadPhoto","DetailsURL":"./service/uploadPhoto/","Metadata":"./service/uploadPhoto/$metadata","Entities":[{"Name":"Fotos","URL":"./service/uploadPhoto/Fotos","FioriURL":""}],"EntitiesCount":1}]}
+                            const data = {"Services":[{"ServiceName":"facturasbackendService","DetailsURL":"./service/facturasbackendService/","Metadata":"./service/facturasbackendService/$metadata","Entities":[{"Name":"Fotos","URL":"./service/facturasbackendService/Fotos","FioriURL":""},{"Name":"DatosHeader","URL":"./service/facturasbackendService/DatosHeader","FioriURL":""},{"Name":"DatosItems","URL":"./service/facturasbackendService/DatosItems","FioriURL":""}],"EntitiesCount":3},{"ServiceName":"uploadPhoto","DetailsURL":"./service/uploadPhoto/","Metadata":"./service/uploadPhoto/$metadata","Entities":[{"Name":"Fotos","URL":"./service/uploadPhoto/Fotos","FioriURL":""}],"EntitiesCount":1}]}
                             this.getView().setModel(new JSONModel(data));
                         }
                     });
