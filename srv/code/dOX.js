@@ -6,8 +6,10 @@
 
 const cap_doxlib = require('./lib_cap_dox'); // Importar librería para interacciones con DOX
 
+
 /* Procesa la imagen asociada a una nueva foto y genera los datos correspondientes */
 module.exports = async function (request) {
+  
   const { Fotos, DatosHeader, DatosItems } = cds.entities('facturasbackendService'); 
   const fotos_ID = request.params[0]; // ID de la foto obtenida de los parámetros
   const dato_ID = cap_doxlib.randomId(fotos_ID); // Generar un ID aleatorio para el dato

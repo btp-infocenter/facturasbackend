@@ -4,8 +4,11 @@ const fs = require('fs');
 const cds = require('@sap/cds');
 const { Readable } = require('stream');
 const { log } = require("console");
-const cap_dox_key = cds.env.cap_dox_key;
-const cap_dox_key_uaa = cds.env.requires.cap_dox_key_uaa;
+const cap_dox_key = cds.env.cap_dox_key;      // Accede a package.json
+const cap_dox_key_uaa =
+  (typeof process.env.cap_dox_key_uaa === 'undefined')
+  ? cds.env.requires.cap_dox_key_uaa          // Accede a .env
+  : JSON.parse(process.env.cap_dox_key_uaa);  // Accede a variables de entorno fiori (desplegado)
 
 /**
  * Prepara el cuerpo de la solicitud para enviar una imagen y opciones al servicio.
@@ -27,7 +30,7 @@ async function setbody(imagen, options, auth_token) {
   if (options.templateId === 'detect') {
     let candidateTemplateIds = options.candidateTemplateIds;
     options.candidateTemplateIds = [];
-    
+
     // Obtiene las plantillas candidatas
     for (let item of candidateTemplateIds) {
       let templateId = await get_template(item, options, auth_token);
@@ -68,7 +71,7 @@ async function get_token() {
       'Accept': 'application/json'
     }
   };
-  
+
   let access_token = '';
   access_token = await axios.request(config)
     .then((response) => {
@@ -78,7 +81,7 @@ async function get_token() {
     .catch((error) => {
       log(error); // [Advertencia] Manejo de errores en la solicitud de token
     });
-  
+
   return 'Bearer ' + access_token;
 }
 
@@ -112,7 +115,7 @@ async function get_schema(options, auth_token) {
     .catch((error) => {
       console.log(error); // [Advertencia] Manejo de errores en la solicitud del esquema
     });
-  
+
   return schemaId;
 }
 
@@ -147,7 +150,7 @@ async function get_template(templateName, options, auth_token) {
     .catch((error) => {
       console.log(error); // [Advertencia] Manejo de errores en la solicitud de plantilla
     });
-  
+
   return templateId;
 }
 
@@ -185,7 +188,7 @@ async function post_job(imagen, options, auth_token) {
       console.log(error);
       console.log(error.response.data.error); // [Advertencia] Manejo de errores al publicar el trabajo
     });
-  
+
   return job_id;
 }
 
@@ -259,7 +262,7 @@ async function itemsFieldGen(itemsInit, itemsFields, itemsFieldNames) {
   for (let lineItem of itemsFields) {
     let myLineFields = { ...itemsInit };
     myLineFields.ID = randomId(myLineFields.datosHeader_ID); // Genera un ID único para el ítem
-    
+
     for (let item of lineItem) {
       let name = item.name;
 

@@ -5,18 +5,20 @@ service facturasbackendService
 {
     annotate DatosHeader with @restrict :
     [
-        { grant : [ '*' ], to : [ 'facturasUser' ] }
+        { grant : [ '*' ], to : [ 'facturasUser' ] },
+        { grant : [ '*' ], to : [ 'facturasManager' ] }
     ];
 
     annotate DatosItems with @restrict :
     [
-        { grant : [ '*' ], to : [ 'facturasUser' ] }
+        { grant : [ '*' ], to : [ 'facturasUser' ] },
+        { grant : [ '*' ], to : [ 'facturasManager' ] }
     ];
 
     annotate Fotos with @restrict :
     [
-        { grant : [ 'READ', 'CREATE' ], to : [ 'facturasUser' ] },
-        { grant : [ 'READ' ], to : [ 'any' ] }
+        { grant : [ '*' ], to : [ 'facturasManager' ] },
+        { grant : [ 'READ', 'CREATE' ], to : [ 'facturasUser' ] }
     ];
 
     entity Fotos as
@@ -35,3 +37,8 @@ service facturasbackendService
     entity DatosItems as
         projection on my.DatosItems;
 }
+
+annotate facturasbackendService with @requires :
+[
+    'facturasManager'
+];
