@@ -20,20 +20,10 @@ entity DatosHeader : cuid, managed
 {
     status : String(10) not null;
     doxId : String(100);
-    nombreRemitente : Field;
-    rucRemitente : Field;
-    timbrado : Field;
-    autoCreado : Boolean default false;
+    headerFields : many Field null;
+    autoCreado : Boolean default 'false';
     enviado : Boolean default false;
     fotos : Association to one Fotos;
-    items : Composition of many DatosItems on items.datosHeader = $self;
-}
-
-entity DatosItems : cuid, managed
-{
-    descripcion : Field;
-    precioUnitario : Field;
-    datosHeader : Association to one DatosHeader;
 }
 
 type Coordinates
@@ -49,4 +39,11 @@ type Field
     value : String(100);
     confidence : Decimal;
     coordinates : Coordinates;
+    name : String(100);
+}
+
+entity DatosItems
+{
+    key ID : UUID;
+    lineItems : many Field null;
 }
