@@ -8,21 +8,20 @@
  * Restricción aplicada para el evento /enviar de un Dato.
  */
 module.exports = async function(request) {
-    const { DatosHeader } = cds.entities;
-    const dato_ID = request.params[0];
+    const { Fotos } = cds.entities;
+    const foto_ID = request.params[0];
 
-    // [Advertencia] Consulta con SELECT.one, puede necesitar optimización en grandes volúmenes
     // Verificar si el dato ya ha sido enviado
-    const dato = await SELECT.one
+    const foto = await SELECT.one
         .columns('1 as found')
-        .from(DatosHeader)
+        .from(Fotos)
         .where({
-            ID: dato_ID,
+            ID: foto_ID,
 			enviado: true
         });
 
     // Si el dato ya ha sido enviado, lanzar un error
-    if (dato) {
+    if (foto) {
         request.error('Los datos enviados no se pueden modificar');
     } else {
         console.log("👍 Check-enviado");

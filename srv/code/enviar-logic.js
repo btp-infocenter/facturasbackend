@@ -5,17 +5,17 @@
  */
 
 module.exports = async function (request, next) {
-	const { DatosHeader } = cds.entities; // Acceso a la entidad DatosHeader
-	const dato_ID = request.params[0]; // Obtener el ID del dato desde los parámetros
+	const { Fotos } = cds.entities; // Acceso a la entidad DatosHeader
+	const foto_ID = request.params[0]; // Obtener el ID del dato desde los parámetros
 
 	// Recuperar el encabezado del dato basado en su ID
-	const dato = await SELECT.one
-		.from(DatosHeader)
+	const foto = await SELECT.one
+		.from(Fotos)
 		.where({
-			ID: dato_ID
+			ID: foto_ID
 		});
 
-	return dato; // Retornar los datos recuperados
+	return foto; // Retornar los datos recuperados
 
 	// request.error('raise error'); // Llamar a error si fuese necesario
 };

@@ -23,6 +23,7 @@ async function setbody(imagen, options, auth_token) {
   // Obtiene el schemaId si se proporciona el nombre del esquema
   if (options.schemaName) {
     options.schemaId = await get_schema(options, auth_token);
+
     delete options.schemaName;
   }
 
@@ -106,6 +107,8 @@ async function get_schema(options, auth_token) {
   schemaId = await axios.request(config)
     .then((response) => {
       for (let item of response.data.schemas) {
+        // console.log(`${item.name} <-> ${options.schemaName}: equal? ${item.name === options.schemaName}`)
+
         // Compara el nombre y tipo de documento para encontrar el esquema correcto
         if ((item.name === options.schemaName) && (item.documentType === options.documentType)) {
           return item.id;
@@ -141,6 +144,7 @@ async function get_template(templateName, options, auth_token) {
   templateId = await axios.request(config)
     .then((response) => {
       for (let item of response.data.results) {
+
         // Busca el ID de la plantilla que coincide con el nombre
         if (item.name === templateName) {
           return item.id;
@@ -164,8 +168,6 @@ async function get_template(templateName, options, auth_token) {
 async function post_job(imagen, options, auth_token) {
   var job_data = await setbody(imagen, options, auth_token);
 
-  // console.log(job_data); // [Advertencia] Registro del cuerpo del trabajo
-
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
@@ -180,12 +182,11 @@ async function post_job(imagen, options, auth_token) {
   let job_id = '';
   job_id = await axios.request(config)
     .then((response) => {
-      // console.log('JOB Post ID: ------------------>');
-      // console.log(JSON.stringify(response.data.id)); // Registro del ID del trabajo creado
+      console.log(`JOB Post ID: ' ${JSON.stringify(response.data.id)}`);  // Registro del ID del trabajo creado
       return response.data.id;
     })
     .catch((error) => {
-      console.log(error);
+      //console.log(error);
       console.log(error.response.data.error); // [Advertencia] Manejo de errores al publicar el trabajo
     });
 
@@ -246,7 +247,7 @@ async function headerFieldGen(headerInit, headerFields, headerFieldNames) {
     }
   }
 
-  return myHeaderFields; // Retorna el encabezado generado
+  return myHeaderFields, myHeaderFields; // Retorna el encabezado generado
 }
 
 /**

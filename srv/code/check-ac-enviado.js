@@ -11,21 +11,14 @@ const cds = require("@sap/cds-sqlite/lib/cds")
  * un Dato.
  */
 module.exports = async function(request) {
-    const { DatosHeader } = cds.entities;
-
-    // Expresión regular para validar que el ID sea un UUID válido
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const { Values } = cds.entities;
     const ID = request.params[0];
-
-    if (!uuidRegex.test(ID)) {
-        request.error('El parametro no es UUID');
-    }
 
     // [Advertencia] Consulta con SELECT.one, puede necesitar optimización si se hace en grandes volúmenes
     // Obtener el Dato y verificar campos 'autoCreado' y 'enviado'
     const dato = await SELECT.one
         .columns('autoCreado', 'enviado')
-        .from(DatosHeader)
+        .from(Values)
         .where({
             ID: ID,
         })

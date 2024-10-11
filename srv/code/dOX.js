@@ -6,20 +6,19 @@
 
 const cap_doxlib = require('./lib_cap_dox'); // Importar librería para interacciones con DOX
 
-
 /* Procesa la imagen asociada a una nueva foto y genera los datos correspondientes */
 module.exports = async function (request) {
-  
-  const { Fotos, DatosHeader, DatosItems } = cds.entities('facturasbackendService'); 
-  const fotos_ID = request.params[0]; // ID de la foto obtenida de los parámetros
-  const dato_ID = cap_doxlib.randomId(fotos_ID); // Generar un ID aleatorio para el dato
+
+  const { Fotos, Items, Datos, Values } = cds.entities('facturasbackendService');
+  const foto_ID = request.params[0]; // ID de la foto obtenida de los parámetros
+  const random_ID = cap_doxlib.randomId(foto_ID); // Generar un ID aleatorio para identificar el procesamiento
 
   console.log('Starting extraction ...'); // Indicar que comienza la extracción
 
   // Obtener los datos de la foto desde la base de datos
   const foto = await SELECT.one
     .from(Fotos)
-    .where({ ID: fotos_ID });
+    .where({ ID: foto_ID });
 
   const imagen = foto.imagen; // Extraer la imagen de los datos de la foto
 
@@ -30,69 +29,111 @@ module.exports = async function (request) {
       "rucRemitente",
       "timbrado"
     ],
-    "lineItemFields": "descripcion",
+    "lineItemFields": ["descripcion"],
     "clientId": "default",
     "documentType": "invoice",
-    "schemaName": "Factura_schema",
+    "schemaName": "facturaSchema",
     "templateId": "detect",
-    "candidateTemplateIds": ["ticket"]
+    "candidateTemplateIds": ["facturaTemplate1"]
   };
 
   // Obtener token de autenticación para interactuar con DOX
   const auth_token = await cap_doxlib.auth_token();
 
-  // Simulación de job ID (en lugar de enviar la imagen para procesar, se asigna un job ID directamente)
-  // let job_id = "894e053e-ccb8-4d44-b2da-5b59b00a0232";
-
+  // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
 
   if (job_id) {
     // Obtener el estado del trabajo de procesamiento en DOX
     let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
 
-    // Preparar los datos para DatosHeader
-    const datosHeaderInit = {
-      "ID": dato_ID,
-      "fotos_ID": fotos_ID,
-      "status": dox_output.status,
-      "doxId": dox_output.id,
-      "autoCreado": true, // Indicar que el dato fue creado automáticamente
-    };
-
     // Campos de cabecera extraídos por DOX
     const headerFields = dox_output.extraction.headerFields;
+    const lineItems = dox_output.extraction.lineItems;
     const headerFieldNames = ["nombreRemitente", "rucRemitente", "timbrado"];
+    const itemsFieldNames = ["descripcion"];
 
-    // Generar cabecera de DatosHeader usando la librería de procesamiento
-    const header = await cap_doxlib.headerFieldGen(datosHeaderInit, headerFields, headerFieldNames);
+    // Arrays para almacenar las entradas de las tablas
+    let itemsEntries = [];
+    let datosEntries = [];
+    let valuesEntries = [];
 
-    // Preparar los datos para DatosItems
-    const datosItemsInit = {
-      "datosHeader_ID": dato_ID
-    };
+    // Procesar cada línea de ítems extraídos
+    for (let iitem of lineItems) {
+      let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
 
-    // Campos de ítems extraídos por DOX
-    const itemsFields = dox_output.extraction.lineItems;
-    const itemsFieldNames = ["descripcion", "precioUnitario"];
+      itemsEntries.push({
+        ID: itemid,
+        fotos_ID: foto_ID
+      });
 
-    // Generar ítems de DatosItems usando la librería de procesamiento
-    const items = await cap_doxlib.itemsFieldGen(datosItemsInit, itemsFields, itemsFieldNames);
+      // Extraer los campos relacionados con los ítems
+      for (let field of iitem) {
+        if (itemsFieldNames.includes(field.name)) {
+          let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
 
-    // Insertar los datos generados en DatosHeader
-    await INSERT.into(DatosHeader)
-      .entries(header)
-      .then(
-        console.log("👍 Creado-datosAutoGenerados") // Confirmación de la creación de DatosHeader
-      );
+          datosEntries.push({
+            ID: datoid,
+            items_ID: itemid,
+            name: field.name,
+            confidence: field.confidence,
+            model: field.type,
+            coordinates_x: field.coordinates.x,
+            coordinates_y: field.coordinates.y,
+            coordinates_w: field.coordinates.w,
+            coordinates_h: field.coordinates.h
+          });
 
-    // Insertar los ítems generados en DatosItems
-    await INSERT.into(DatosItems)
-      .entries(items)
-      .then(
-        console.log("👍 Creado-items") // Confirmación de la creación de DatosItems
-      );
+          valuesEntries.push({
+            datos_ID: datoid,
+            value: field.value,
+            autoCreado: true,
+            enviado: false
+          });
+        }
+      }
+    }
+
+    // Procesar los campos de cabecera extraídos
+    for (let field of headerFields) {
+      if (headerFieldNames.includes(field.name)) {
+        let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
+
+        datosEntries.push({
+          ID: datoid,
+          fotos_ID: foto_ID,
+          name: field.name,
+          confidence: field.confidence,
+          model: field.type,
+          coordinates_x: field.coordinates.x,
+          coordinates_y: field.coordinates.y,
+          coordinates_w: field.coordinates.w,
+          coordinates_h: field.coordinates.h
+        });
+
+        valuesEntries.push({
+          datos_ID: datoid,
+          value: field.value,
+          autoCreado: true,
+          enviado: false
+        });
+      }
+    }
+
+    // Insertar las entradas en las tablas Items, Datos y Values
+    await INSERT.into(Items).entries(itemsEntries);
+    await INSERT.into(Datos).entries(datosEntries);
+    await INSERT.into(Values).entries(valuesEntries);
+
+    // Actualizar la entidad Fotos con el ID y el estado del trabajo de DOX
+    await UPDATE.entity(Fotos)
+      .data({
+        doxID: job_id,
+        status: dox_output.status
+      });
 
   } else {
-    request.error("Can not initialize DOX"); // Error si no se puede inicializar el procesamiento en DOX
+    // Mostrar error si no se puede inicializar el procesamiento en DOX
+    request.error("Can not initialize DOX");
   }
 };

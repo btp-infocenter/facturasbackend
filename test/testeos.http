@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:4004
 @datoAG = 6eaf9905-9f8a-48af-998b-908587ef7100
 @imgP =  d5a5d07c-a193-4e59-98de-7d36557a35e8
-@imgNP = bee70546-10d7-455d-8055-841566efa451
+@imgNP = 6597af6c-e03c-4d71-91c7-ad9e18a23b65
 
 ### GETTERS ###
 ### GET ALL PHOTOS
@@ -94,3 +94,7 @@ Content-Type: application/json
 {
   
 }
+
+
+### WATCH ITEMS
+GET {{baseUrl}}/service/facturasbackendService/Items

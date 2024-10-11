@@ -30,13 +30,5 @@
 			"IsSimple": true,
 			"SimplePrivilege": 2
 		}
-	},
-	{
-		"Name": "facturasManager",
-		"Description": "",
-		"defaultPrivilege": {
-			"IsSimple": true,
-			"SimplePrivilege": 3
-		}
 	}
 ]

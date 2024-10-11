@@ -76,7 +76,7 @@
         "cap_dox_key": {
             "endpoints": {
                 "backend": {
-                    "url": "https://aiservices-trial-dox.cfapps.us10.hana.ondemand.com"
+                    "url": "https://aiservices-dox.cfapps.us10.hana.ondemand.com"
                 }
             },
             "swagger": "/document-information-extraction/v1/"

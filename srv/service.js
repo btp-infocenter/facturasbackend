@@ -3,8 +3,6 @@
  * @version(2.0)
  */
 const LCAPApplicationService = require('@sap/low-code-event-handler');
-const set_Procesado = require('./code/set-procesado');
-const check_Procesado = require('./code/check-procesado');
 const check_Ac_Enviado = require('./code/check-ac-enviado');
 const enviar_Logic = require('./code/enviar-logic');
 const check_Enviado = require('./code/check-enviado');
@@ -13,29 +11,26 @@ const reset_Enviado = require('./code/reset-enviado');
 
 class facturasbackendService extends LCAPApplicationService {
     async init() {
-        this.before(['CREATE', 'DELETE', 'UPDATE'], 'DatosHeader', async (request) => {
-            await check_Procesado(request);
-        });
 
-        this.on(['DELETE', 'UPDATE'], 'DatosHeader', async (request, next) => {
+        this.on(['DELETE', 'UPDATE'], 'Values', async (request, next) => {
             await check_Ac_Enviado(request);
             return next();
+        });
+        
+        this.after('CREATE', 'Values', async (results, request) => {
+            await reset_Enviado(results, request);
+        });
+
+        this.before('enviar', 'Fotos', async (request) => {
+            await check_Enviado(request);
         });
 
         this.on('enviar', 'DatosHeader', async (request, next) => {
             return enviar_Logic(request);
         });
 
-        this.before('enviar', 'DatosHeader', async (request) => {
-            await check_Enviado(request);
-        });
-
-        this.after('enviar', 'DatosHeader', async (results, request) => {
+        this.after('enviar', 'Fotos', async (results, request) => {
             await set_Enviado(results, request);
-        });
-
-        this.after('CREATE', 'DatosHeader', async (results, request) => {
-            await reset_Enviado(results, request);
         });
 
         return super.init();

@@ -3,42 +3,42 @@ using { facturasbackend as my } from '../db/schema.cds';
 @path : '/service/facturasbackendService'
 service facturasbackendService
 {
-    annotate DatosHeader with @restrict :
+    annotate Datos with @restrict :
     [
-        { grant : [ '*' ], to : [ 'facturasUser' ] },
-        { grant : [ '*' ], to : [ 'facturasManager' ] }
-    ];
-
-    annotate DatosItems with @restrict :
-    [
-        { grant : [ '*' ], to : [ 'facturasUser' ] },
-        { grant : [ '*' ], to : [ 'facturasManager' ] }
+        { grant : [ 'READ' ], to : [ 'facturasUser' ] }
     ];
 
     annotate Fotos with @restrict :
     [
-        { grant : [ '*' ], to : [ 'facturasManager' ] },
-        { grant : [ 'READ', 'CREATE' ], to : [ 'facturasUser' ] }
+        { grant : [ 'READ', 'CREATE', 'UPDATE', 'enviar' ], to : [ 'facturasUser' ] }
+    ];
+
+    annotate Items with @restrict :
+    [
+        { grant : [ 'READ' ], to : [ 'facturasUser' ] }
+    ];
+
+    annotate Values with @restrict :
+    [
+        { grant : [ 'READ', 'CREATE', 'UPDATE' ], to : [ 'facturasUser' ] }
     ];
 
     entity Fotos as
-        projection on my.Fotos;
-
-    entity DatosHeader as
-        projection on my.DatosHeader
+        projection on my.Fotos
         actions
         {
             action enviar
             (
             )
-            returns DatosHeader;
+            returns Fotos;
         };
 
-    entity DatosItems as
-        projection on my.DatosItems;
-}
+    entity Items as
+        projection on my.Items;
 
-annotate facturasbackendService with @requires :
-[
-    'facturasManager'
-];
+    entity Datos as
+        projection on my.Datos;
+
+    entity Values as
+        projection on my.Values;
+}

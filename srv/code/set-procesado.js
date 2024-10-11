@@ -10,8 +10,6 @@ module.exports = async function(results, request) {
 	const { Fotos } = cds.entities('facturasbackendService');
 	const ID = request.params[0];
 
-	console.log("Inicio del procesamiento para la foto con ID:", ID); // Mejor mensaje de log
-
 	try {
 		// Actualizar el estado de la foto a 'procesado'
 		await UPDATE.entity(Fotos).set({
