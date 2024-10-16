@@ -11,7 +11,7 @@
  * el estado de la foto pasa a ser 'no enviado'.
  */
 module.exports = async function (results, request) {
-	const { Values, Datos, Items, Fotos } = cds.entities; // Accede a la entidad Fotos
+	const { Values, Datos, Items, Fotos } = cds.entities('facturasbackendService'); // Accede a la entidad Fotos
 	const { value_ID } = results; // Extrae el ID de las fotos del resultado del evento
 	
 	try {

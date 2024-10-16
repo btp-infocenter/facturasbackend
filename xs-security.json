@@ -1,24 +1,12 @@
 {
   "scopes": [
     {
-      "name": "$XSAPPNAME.facturasManager",
-      "description": "facturasManager"
-    },
-    {
       "name": "$XSAPPNAME.facturasUser",
       "description": "facturasUser"
     }
   ],
   "attributes": [],
   "role-templates": [
-    {
-      "name": "facturasManager",
-      "description": "",
-      "scope-references": [
-        "$XSAPPNAME.facturasManager"
-      ],
-      "attribute-references": []
-    },
     {
       "name": "facturasUser",
       "description": "",

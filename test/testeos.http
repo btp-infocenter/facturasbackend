@@ -9,7 +9,7 @@ GET {{baseUrl}}/service/facturasbackendService/Fotos
 
 
 ### GET IMAGEN
-GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/datosHeader
 
 
 ### GET ALL DATA-HEADERS
@@ -58,7 +58,7 @@ Content-Type: application/json
 
 
 ###
-GET {{baseUrl}}/service/uploadImagen/Fotos({{photoNAG}})
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})
 
 
 ### DELETE DATE
@@ -70,7 +70,7 @@ GET {{baseUrl}}/service/uploadImagen/$metadata
 
 ### FUNCTIONS ###
 ### Send to B1
-POST {{baseUrl}}/service/facturasbackendService/Datos({{datoNAG}})/facturasbackendService.enviar
+POST {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/facturasbackendService.enviar
 Content-Type: application/json
 
 { 

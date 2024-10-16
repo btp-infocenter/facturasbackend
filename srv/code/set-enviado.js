@@ -10,34 +10,26 @@
 /* Después de la función /enviar, establece el estado
  * de Foto y Dato a enviado: true.
  */
-module.exports = async function(results, request) {
-	const { Fotos, DatosHeader } = cds.entities; // Accede a las entidades Fotos y DatosHeader.
-	const { ID, fotos_ID } = results; // Extrae el ID del Dato y el ID de la Foto.
+module.exports = async function (results, request) {
+	const { Fotos, Datos, Values } = cds.entities('facturasbackendService'); // Accede a las entidades Fotos y DatosHeader.
+	const foto_ID = request.params[0];
 
 	try {
 		// Actualiza el estado de la Foto a 'enviado'
-		await UPDATE.entity(Fotos).set({ 
-			enviado: true 
+		await UPDATE.entity(Fotos).set({
+			enviado: true
 		}).where({
-			ID: fotos_ID
+			ID: foto_ID
 		});
 		console.log("👍 set-foto.enviado(true)"); // Confirma la actualización de la Foto.
 
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////// CÓDIGO INCOMPLETO ///////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-		// Actualiza el estado del Dato a 'enviado'
-		await UPDATE.entity(DatosHeader).set({
-			enviado: true 
-		}).where({
-			ID: ID
-		});
-		console.log("👍 set-dato.enviado(true)"); // Confirma la actualización del Dato.
+		await UPDATE.entity(Values).set({
+			enviado: true
+		}).where({ datos_ID: {
+			in: SELECT.from(Datos)
+					.columns('ID')
+					.where({ fotos_ID: foto_ID })
+		}});
 
 	} catch (error) {
 		console.error("Error al actualizar estados de enviado:", error); // Manejo de errores en las operaciones de actualización.

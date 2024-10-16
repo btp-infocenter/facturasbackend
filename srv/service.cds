@@ -33,11 +33,15 @@ service facturasbackendService
             returns Fotos;
         };
 
-    entity Items as
-        projection on my.Items;
 
     entity Datos as
         projection on my.Datos;
+
+        
+    entity Items as
+        projection on my.Items;
+
+
 
     entity Values as
         projection on my.Values;

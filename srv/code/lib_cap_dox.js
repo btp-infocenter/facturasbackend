@@ -1,6 +1,5 @@
 const axios = require("axios");
 const FormData = require('form-data');
-const fs = require('fs');
 const cds = require('@sap/cds');
 const { Readable } = require('stream');
 const { log } = require("console");
@@ -225,62 +224,6 @@ async function get_job_status(job_id, auth_token) {
   return job_details; // Retorna los detalles del trabajo cuando esté completo
 }
 
-/**
- * Genera un objeto con los campos del encabezado a partir de los resultados de extracción.
- * @param {Object} headerInit - Datos iniciales del encabezado.
- * @param {Array} headerFields - Campos extraídos del encabezado.
- * @param {Array} headerFieldNames - Nombres de los campos a incluir.
- * @returns {Object} - Encabezado generado.
- */
-async function headerFieldGen(headerInit, headerFields, headerFieldNames) {
-  let myHeaderFields = { ...headerInit };
-
-  for (let item of headerFields) {
-    let name = item.name;
-    if (headerFieldNames.includes(name)) {
-      myHeaderFields[`${name}_value`] = String(item.value);
-      myHeaderFields[`${name}_confidence`] = item.confidence;
-      myHeaderFields[`${name}_coordinates_x`] = item.coordinates.x;
-      myHeaderFields[`${name}_coordinates_y`] = item.coordinates.y;
-      myHeaderFields[`${name}_coordinates_w`] = item.coordinates.w;
-      myHeaderFields[`${name}_coordinates_h`] = item.coordinates.h;
-    }
-  }
-
-  return myHeaderFields, myHeaderFields; // Retorna el encabezado generado
-}
-
-/**
- * Genera objetos de línea de ítems a partir de los resultados de extracción.
- * @param {Object} itemsInit - Datos iniciales de los ítems.
- * @param {Array} itemsFields - Campos extraídos de los ítems.
- * @param {Array} itemsFieldNames - Nombres de los campos a incluir.
- * @returns {Array} - Lista de ítems generados.
- */
-async function itemsFieldGen(itemsInit, itemsFields, itemsFieldNames) {
-  let myLineItems = [];
-
-  for (let lineItem of itemsFields) {
-    let myLineFields = { ...itemsInit };
-    myLineFields.ID = randomId(myLineFields.datosHeader_ID); // Genera un ID único para el ítem
-
-    for (let item of lineItem) {
-      let name = item.name;
-
-      if (itemsFieldNames.includes(name)) {
-        myLineFields[`${name}_value`] = String(item.value);
-        myLineFields[`${name}_confidence`] = item.confidence;
-        myLineFields[`${name}_coordinates_x`] = item.coordinates.x;
-        myLineFields[`${name}_coordinates_y`] = item.coordinates.y;
-        myLineFields[`${name}_coordinates_w`] = item.coordinates.w;
-        myLineFields[`${name}_coordinates_h`] = item.coordinates.h;
-      }
-    }
-    myLineItems.push(myLineFields); // Agrega el ítem generado a la lista
-  }
-
-  return myLineItems; // Retorna la lista de ítems generados
-}
 
 /* Código de GEMINI. Generar un UUID único,
   de forma tal que la primera parte sea igual que la
@@ -299,22 +242,13 @@ module.exports = {
   auth_token: async function () {
     return await get_token();
   },
-  schema_id: async function () {
-    return await get_schema();
-  },
   post_job: async function (pdf, fileName, auth_token) {
     return await post_job(pdf, fileName, auth_token);
   },
   get_job_status: async function (job_id, auth_token) {
     return await get_job_status(job_id, auth_token);
   },
-  headerFieldGen: async function (headerInit, headerFields, headerFieldNames) {
-    return await headerFieldGen(headerInit, headerFields, headerFieldNames);
-  },
-  itemsFieldGen: async function (itemsInit, itemsFields, itemsFieldNames) {
-    return await itemsFieldGen(itemsInit, itemsFields, itemsFieldNames);
-  },
-  randomId: function (initialUUID) {
-    return randomId(initialUUID);
+  randomId: async function (job_id, auth_token) {
+    return await randomId(initialUuid);
   }
 };

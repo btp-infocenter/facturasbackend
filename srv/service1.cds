@@ -1,5 +1,11 @@
 using { facturasbackend as my } from '../db/schema.cds';
 
+extend my.Fotos
+{
+    extend imagen
+        @cap_dox;
+}
+
 @path : '/service/uploadPhoto'
 service uploadPhoto
 {
@@ -22,8 +28,3 @@ annotate uploadPhoto with @restrict :
 [
     { grant : [ '*' ], to : [ 'facturasUser' ] }
 ];
-
-annotate my.Fotos with {
-    imagen @cap_dox;
-};
-

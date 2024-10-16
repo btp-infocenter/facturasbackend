@@ -167,10 +167,6 @@ resources:
         xsappname: facturasbackend-${space}
         role-collections:
           - description: ''
-            name: facturasbackend-facturasManager-${space}
-            role-template-references:
-              - $XSAPPNAME.facturasManager
-          - description: ''
             name: facturasbackend-facturasUser-${space}
             role-template-references:
               - $XSAPPNAME.facturasUser

@@ -11,7 +11,7 @@ const cds = require("@sap/cds-sqlite/lib/cds")
  * un Dato.
  */
 module.exports = async function(request) {
-    const { Values } = cds.entities;
+    const { Values } = cds.entities('facturasbackendService');
     const ID = request.params[0];
 
     // [Advertencia] Consulta con SELECT.one, puede necesitar optimización si se hace en grandes volúmenes

@@ -18,6 +18,7 @@ module.exports = async function (request) {
   // Obtener los datos de la foto desde la base de datos
   const foto = await SELECT.one
     .from(Fotos)
+    .columns(['imagen'])
     .where({ ID: foto_ID });
 
   const imagen = foto.imagen; // Extraer la imagen de los datos de la foto
@@ -44,37 +45,64 @@ module.exports = async function (request) {
   let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
 
   if (job_id) {
-    // Obtener el estado del trabajo de procesamiento en DOX
-    let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
+      // Obtener el estado del trabajo de procesamiento en DOX
+      let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
 
-    // Campos de cabecera extraídos por DOX
-    const headerFields = dox_output.extraction.headerFields;
-    const lineItems = dox_output.extraction.lineItems;
-    const headerFieldNames = ["nombreRemitente", "rucRemitente", "timbrado"];
-    const itemsFieldNames = ["descripcion"];
+      // Campos de cabecera extraídos por DOX
+      const headerFields = dox_output.extraction.headerFields;
+      const lineItems = dox_output.extraction.lineItems;
+      const headerFieldNames = options.headerFields;
+      const itemsFieldNames = options.lineItemFields;
 
-    // Arrays para almacenar las entradas de las tablas
-    let itemsEntries = [];
-    let datosEntries = [];
-    let valuesEntries = [];
+      // Arrays para almacenar las entradas de las tablas
+      let itemsEntries = [];
+      let datosEntries = [];
+      let valuesEntries = [];
 
-    // Procesar cada línea de ítems extraídos
-    for (let iitem of lineItems) {
-      let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
+      // Procesar cada línea de ítems extraídos
+      for (let iitem of lineItems) {
+        let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
 
-      itemsEntries.push({
-        ID: itemid,
-        fotos_ID: foto_ID
-      });
+        itemsEntries.push({
+          ID: itemid,
+          fotos_ID: foto_ID
+        });
 
-      // Extraer los campos relacionados con los ítems
-      for (let field of iitem) {
-        if (itemsFieldNames.includes(field.name)) {
+        // Extraer los campos relacionados con los ítems
+        for (let field of iitem) {
+          if (itemsFieldNames.includes(field.name)) {
+            let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
+
+            datosEntries.push({
+              ID: datoid,
+              items_ID: itemid,
+              name: field.name,
+              confidence: field.confidence,
+              model: field.type,
+              coordinates_x: field.coordinates.x,
+              coordinates_y: field.coordinates.y,
+              coordinates_w: field.coordinates.w,
+              coordinates_h: field.coordinates.h
+            });
+
+            valuesEntries.push({
+              datos_ID: datoid,
+              value: field.value,
+              autoCreado: true,
+              enviado: false
+            });
+          }
+        }
+      }
+
+      // Procesar los campos de cabecera extraídos
+      for (let field of headerFields) {
+        if (headerFieldNames.includes(field.name)) {
           let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
 
           datosEntries.push({
             ID: datoid,
-            items_ID: itemid,
+            fotos_ID: foto_ID,
             name: field.name,
             confidence: field.confidence,
             model: field.type,
@@ -92,45 +120,18 @@ module.exports = async function (request) {
           });
         }
       }
-    }
 
-    // Procesar los campos de cabecera extraídos
-    for (let field of headerFields) {
-      if (headerFieldNames.includes(field.name)) {
-        let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
+      // Insertar las entradas en las tablas Items, Datos y Values
+      await INSERT.into(Items).entries(itemsEntries);
+      await INSERT.into(Datos).entries(datosEntries);
+      await INSERT.into(Values).entries(valuesEntries);
 
-        datosEntries.push({
-          ID: datoid,
-          fotos_ID: foto_ID,
-          name: field.name,
-          confidence: field.confidence,
-          model: field.type,
-          coordinates_x: field.coordinates.x,
-          coordinates_y: field.coordinates.y,
-          coordinates_w: field.coordinates.w,
-          coordinates_h: field.coordinates.h
+      // Actualizar la entidad Fotos con el ID y el estado del trabajo de DOX
+      await UPDATE.entity(Fotos)
+        .data({
+          doxID: job_id,
+          status: dox_output.status
         });
-
-        valuesEntries.push({
-          datos_ID: datoid,
-          value: field.value,
-          autoCreado: true,
-          enviado: false
-        });
-      }
-    }
-
-    // Insertar las entradas en las tablas Items, Datos y Values
-    await INSERT.into(Items).entries(itemsEntries);
-    await INSERT.into(Datos).entries(datosEntries);
-    await INSERT.into(Values).entries(valuesEntries);
-
-    // Actualizar la entidad Fotos con el ID y el estado del trabajo de DOX
-    await UPDATE.entity(Fotos)
-      .data({
-        doxID: job_id,
-        status: dox_output.status
-      });
 
   } else {
     // Mostrar error si no se puede inicializar el procesamiento en DOX
