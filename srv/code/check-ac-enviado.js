@@ -10,31 +10,34 @@ const cds = require("@sap/cds-sqlite/lib/cds")
  * Restricción aplicada para EDITAR o ELIMINAR
  * un Dato.
  */
-module.exports = async function(request) {
+module.exports = async function (request) {
     const { Values } = cds.entities('facturasbackendService');
     const ID = request.params[0];
 
     // [Advertencia] Consulta con SELECT.one, puede necesitar optimización si se hace en grandes volúmenes
     // Obtener el Dato y verificar campos 'autoCreado' y 'enviado'
-    const dato = await SELECT.one
+    const valor = await SELECT.one
         .columns('autoCreado', 'enviado')
         .from(Values)
         .where({
             ID: ID,
         })
-		.and(
-			{ or: [{ autoCreado: true }, { enviado: true }] }
-		);
+        .and({
+            or: [
+                { autoCreado: true },
+                { enviado: true }
+            ]
+        });
 
     // Si el dato fue generado automáticamente, no permitir su modificación
-    if (dato.autoCreado) {
+    if (valor.autoCreado) {
         request.error('Los datos extraidos automáticamente no se pueden modificar');
     } else {
         console.log("👍 Check-autoGenerado");
     }
 
     // Si el dato ya fue enviado, no permitir su modificación
-    if (dato.enviado) {
+    if (valor.enviado) {
         request.error('Los datos enviados no se pueden modificar');
     } else {
         console.log("👍 Check-enviado");

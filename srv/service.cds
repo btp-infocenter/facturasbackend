@@ -23,6 +23,21 @@ service facturasbackendService
         { grant : [ 'READ', 'CREATE', 'UPDATE' ], to : [ 'facturasUser' ] }
     ];
 
+    annotate Values with @Aggregation.ApplySupported : 
+    {
+        $Type : 'Aggregation.ApplySupportedType',
+        GroupableProperties :
+        [
+            datos_ID
+        ],
+        AggregatableProperties :
+        [
+            {
+                Property : createdAt
+            }
+        ]
+    };
+
     entity Fotos as
         projection on my.Fotos
         actions
@@ -33,15 +48,11 @@ service facturasbackendService
             returns Fotos;
         };
 
-
     entity Datos as
         projection on my.Datos;
 
-        
     entity Items as
         projection on my.Items;
-
-
 
     entity Values as
         projection on my.Values;

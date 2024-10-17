@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title> Project Preview </title>
+    <script src="https://ui5.sap.com/1.120.17/resources/sap-ui-core.js" 
+            id="sap-ui-bootstrap"
+            data-sap-ui-theme="sap_horizon"
+            data-sap-ui-bindingSyntax="complex" 
+            data-sap-ui-xx-bindingSyntax="complex"
+            data-sap-ui-resourceroots='{"assets": "assets"}' 
+            data-sap-ui-libs="sap.m,sap.uxap,sap.ui.layout,sap.f">
+    </script>
+    <link rel="stylesheet" href="assets/preview.css">
+</head>
+
+<body id="body" class="sapUiBody">
+    <script>
+        "use strict";
+        sap.ui.localResources("assets");
+        (function (jQuery, App, Page) {
+            sap.ui.getCore().attachInit(function () {
+                sap.ui.define([
+                    "sap/ui/core/mvc/Controller",
+                    "sap/ui/model/json/JSONModel"
+                ], function (Controller, JSONModel) {
+                    return Controller.extend("PreviewController", {
+                        onInit: function () {
+
+                            const data = {"Services":[{"ServiceName":"facturasbackendService","DetailsURL":"./service/facturasbackendService/","Metadata":"./service/facturasbackendService/$metadata","Entities":[{"Name":"Fotos","URL":"./service/facturasbackendService/Fotos","FioriURL":"$fiori-preview/facturasbackendService/Fotos#preview-app"},{"Name":"Datos","URL":"./service/facturasbackendService/Datos","FioriURL":"$fiori-preview/facturasbackendService/Datos#preview-app"},{"Name":"Items","URL":"./service/facturasbackendService/Items","FioriURL":"$fiori-preview/facturasbackendService/Items#preview-app"},{"Name":"Values","URL":"./service/facturasbackendService/Values","FioriURL":"$fiori-preview/facturasbackendService/Values#preview-app"}],"EntitiesCount":4},{"ServiceName":"uploadPhoto","DetailsURL":"./service/uploadPhoto/","Metadata":"./service/uploadPhoto/$metadata","Entities":[{"Name":"Fotos","URL":"./service/uploadPhoto/Fotos","FioriURL":"$fiori-preview/uploadPhoto/Fotos#preview-app"}],"EntitiesCount":1}]}
+                            this.getView().setModel(new JSONModel(data));
+                        }
+                    });
+                });
+                var oApp = new App()
+                var previewView = sap.ui.view({
+                    viewName: "assets.Preview",
+                    type: sap.ui.core.mvc.ViewType.XML
+                });
+                oApp.addPage(new Page({
+                    content: [previewView],
+                    showHeader: false
+                })).placeAt("content");
+            });
+
+        }(jQuery, sap.m.App, sap.m.Page));
+    </script>
+    <div id="content"></div>
+</body>
+
+</html>

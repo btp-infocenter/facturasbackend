@@ -11,8 +11,8 @@
  * de Foto y Dato a enviado: true.
  */
 module.exports = async function (results, request) {
-	const { Fotos, Datos, Values } = cds.entities('facturasbackendService'); // Accede a las entidades Fotos y DatosHeader.
-	const foto_ID = request.params[0];
+	const { Fotos, Items, Datos, Values } = cds.entities('facturasbackendService'); // Accede a las entidades Fotos, Items, Datos y Values.
+	const foto_ID = request.params[0]; // Obtiene el ID de la foto a partir de los parámetros de la solicitud.
 
 	try {
 		// Actualiza el estado de la Foto a 'enviado'
@@ -20,18 +20,32 @@ module.exports = async function (results, request) {
 			enviado: true
 		}).where({
 			ID: foto_ID
-		});
-		console.log("👍 set-foto.enviado(true)"); // Confirma la actualización de la Foto.
+		})
+		console.log("👍 set-foto.enviado(true)"); // Confirma la actualización del estado de la foto.
 
-		await UPDATE.entity(Values).set({
-			enviado: true
-		}).where({ datos_ID: {
-			in: SELECT.from(Datos)
-					.columns('ID')
-					.where({ fotos_ID: foto_ID })
-		}});
+		// [Advertencia] Esta lógica podría no ser clara, ya que implica varios niveles de relaciones y subconsultas.
+		// Actualiza el estado de Values relacionados a Datos que pertenecen a la Foto o a Items relacionados con la Foto.
+		await UPDATE.entity(Values)
+			.set({ enviado: true })
+			.where({
+				datos_ID: {
+					in: SELECT.from(Datos)
+						.columns('ID')
+						.where(
+							{ fotos_ID: foto_ID }) // Relaciona Datos con la Foto
+						.or({
+							items_ID: {
+								in: SELECT.from(Items).columns('ID').where({
+									fotos_ID: foto_ID // Relaciona Items con la Foto
+								})
+							}
+						})
+				}
+			});
 
 	} catch (error) {
-		console.error("Error al actualizar estados de enviado:", error); // Manejo de errores en las operaciones de actualización.
+		// Manejo de errores en las operaciones de actualización.
+		console.error("Error al actualizar estados de enviado:", error);
 	}
 };
+

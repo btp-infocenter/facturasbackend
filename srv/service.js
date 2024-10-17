@@ -4,10 +4,10 @@
  */
 const LCAPApplicationService = require('@sap/low-code-event-handler');
 const check_Ac_Enviado = require('./code/check-ac-enviado');
-const enviar_Logic = require('./code/enviar-logic');
+const reset_Enviado = require('./code/reset-enviado');
 const check_Enviado = require('./code/check-enviado');
 const set_Enviado = require('./code/set-enviado');
-const reset_Enviado = require('./code/reset-enviado');
+const enviar_logic = require('./code/enviar_logic');
 
 class facturasbackendService extends LCAPApplicationService {
     async init() {
@@ -16,7 +16,7 @@ class facturasbackendService extends LCAPApplicationService {
             await check_Ac_Enviado(request);
             return next();
         });
-        
+
         this.after('CREATE', 'Values', async (results, request) => {
             await reset_Enviado(results, request);
         });
@@ -31,6 +31,10 @@ class facturasbackendService extends LCAPApplicationService {
 
         this.after('enviar', 'Fotos', async (results, request) => {
             await set_Enviado(results, request);
+        });
+
+        this.on('enviar', 'Fotos', async (request, next) => {
+            return enviar_logic(request);
         });
 
         return super.init();

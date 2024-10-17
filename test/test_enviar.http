@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:4004
+
+@imgNP = 6597af6c-e03c-4d71-91c7-ad9e18a23b65
+
+### Procesar DOX ###
+POST {{baseUrl}}/service/uploadPhoto/Fotos({{imgNP}})/uploadPhoto.dox
+Content-Type: application/json
+
+{
+  
+}
+
+### WATCH Values
+GET {{baseUrl}}/service/facturasbackendService/Values
+
+### new updated value
+POST {{baseUrl}}/service/facturasbackendService/Values
+Content-Type: application/json
+
+{ 
+  "value" : "Cinta 2.0",
+  "datos_ID": "6597af6c-e03c-4d71-91c7-7736d2bf9c7a"
+}
+
+
+### Send to B1
+POST {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/facturasbackendService.enviar
+Content-Type: application/json
+
+{ 
+  
+}
+
+### GETTERS ###
+### GET ALL PHOTOS
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})
+
+
+### GET IMAGEN
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/enviado/$value
+
+### GET ALL PHOTOS
+GET {{baseUrl}}/service/facturasbackendService/Datos
+
+
+

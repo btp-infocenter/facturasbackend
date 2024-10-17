@@ -9,9 +9,8 @@ const cap_doxlib = require('./lib_cap_dox'); // Importar librería para interacc
 /* Procesa la imagen asociada a una nueva foto y genera los datos correspondientes */
 module.exports = async function (request) {
 
-  const { Fotos, Items, Datos, Values } = cds.entities('facturasbackendService');
+  const { Fotos, Items, Datos, Values } = cds.entities('facturasbackend');
   const foto_ID = request.params[0]; // ID de la foto obtenida de los parámetros
-  const random_ID = cap_doxlib.randomId(foto_ID); // Generar un ID aleatorio para identificar el procesamiento
 
   console.log('Starting extraction ...'); // Indicar que comienza la extracción
 
@@ -43,7 +42,7 @@ module.exports = async function (request) {
 
   // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
-
+  
   if (job_id) {
       // Obtener el estado del trabajo de procesamiento en DOX
       let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
@@ -62,7 +61,6 @@ module.exports = async function (request) {
       // Procesar cada línea de ítems extraídos
       for (let iitem of lineItems) {
         let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
-
         itemsEntries.push({
           ID: itemid,
           fotos_ID: foto_ID

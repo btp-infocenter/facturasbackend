@@ -7,23 +7,29 @@
  * anteriormente.
  * Restricción aplicada para el evento /enviar de un Dato.
  */
-module.exports = async function(request) {
-    const { Fotos } = cds.entities('facturasbackendService');
+module.exports = async function (request) {
+    const { Fotos } = cds.entities('facturasbackend');
     const foto_ID = request.params[0];
 
     // Verificar si el dato ya ha sido enviado
     const foto = await SELECT.one
-        .columns('ID')
+        .columns('enviado', 'procesado')
         .from(Fotos)
-        .where({
-            ID: foto_ID,
-			enviado: true
-        });
+        .where(
+            { ID: foto_ID}
+        )
+        .or({
+            procesado: false,
+            enviado: true
+        })
 
     // Si el dato ya ha sido enviado, lanzar un error
     if (foto) {
-        request.error('La foto ya ha sido enviada');
-    } else {
-        console.log("👍 Check-enviado");
+        if (foto.enviado) 
+            request.error('La foto ya ha sido enviada');
+        else if (!foto.procesado)
+            request.error('La foto aun no ha sido procesada');
+    }else {
+        console.log("👍 Check-enviado/procesado");
     }
 }

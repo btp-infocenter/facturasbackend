@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:4004
+
+### 1. Agregar Foto
+# @name newPhoto
+POST {{baseUrl}}/service/facturasbackendService/Fotos
+Content-Type: application/json
+
+{
+    
+}
+
+###
+@photoNAG = {{newPhoto.response.body.$.ID}}
+
+
+### 1.1 Intentar Enviar Foto
+POST {{baseUrl}}/service/facturasbackendService/Fotos({{photoNAG}})/facturasbackendService.enviar
+Content-Type: application/json
+
+{ 
+  
+}
+
+### 1.2 Intentar Procesar Foto
+
+### 1.3 Intentar Agregar Items
+
+
+### 2. Agregar Imagen a Foto
