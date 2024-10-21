@@ -1,29 +1,52 @@
 @baseUrl = http://localhost:4004
 
-### 1. Agregar Foto
-# @name newPhoto
-POST {{baseUrl}}/service/facturasbackendService/Fotos
+@imgNP = e35b60f0-cdd7-42a9-812d-97cf4a1008c5
+
+### Procesar DOX ###
+POST {{baseUrl}}/service/uploadPhoto/Fotos({{imgNP}})/uploadPhoto.dox
 Content-Type: application/json
 
 {
-    
+  
 }
 
-###
-@photoNAG = {{newPhoto.response.body.$.ID}}
+### WATCH Values
+GET {{baseUrl}}/service/facturasbackendService/Values
+
+### WATCH Datos
+GET {{baseUrl}}/service/facturasbackendService/Datos
+
+### new updated value
+POST {{baseUrl}}/service/facturasbackendService/Values
+Content-Typce: application/json
+
+{ 
+  "value" : "Cinta 2.0",
+  "datos_ID": "e35b60f0-cdd7-42a9-812d-24676d2b0477"
+}
 
 
-### 1.1 Intentar Enviar Foto
-POST {{baseUrl}}/service/facturasbackendService/Fotos({{photoNAG}})/facturasbackendService.enviar
+### Send to B1
+POST {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/facturasbackendService.enviar
 Content-Type: application/json
 
 { 
   
 }
 
-### 1.2 Intentar Procesar Foto
+###
+GET {{baseUrl}}/service/facturasbackendService/Values
 
-### 1.3 Intentar Agregar Items
 
+### GETTERS ###
+### GET ALL PHOTOS
+GET {{baseUrl}}/service/facturasbackendService/Fotos
 
-### 2. Agregar Imagen a Foto
+### GET IMAGEN
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/enviado/$value
+
+### GET ALL PHOTOS
+GET {{baseUrl}}/service/facturasbackendService/Datos
+
+###
+GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/datosHeader

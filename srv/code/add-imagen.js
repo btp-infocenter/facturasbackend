@@ -17,9 +17,7 @@ module.exports = async function(request) {
 	const oldFoto = await SELECT.one
 		.columns('imagen')
 		.from(Fotos)
-		.where({
-			ID: fotos_ID // Busca la foto existente por ID
-		});
+		.where({ID: fotos_ID});
 
 	// No agregar información encima de valor nulo
 	const imagen = oldFoto.imagen == null ? newImagen : oldFoto.imagen + newImagen; 

@@ -14,13 +14,11 @@ module.exports = async function (request) {
 
   console.log('Starting extraction ...'); // Indicar que comienza la extracción
 
-  // Obtener los datos de la foto desde la base de datos
-  const foto = await SELECT.one
+  // Obtener la imagen de la foto desde la base de datos
+  const {imagen} = await SELECT.one
     .from(Fotos)
     .columns(['imagen'])
-    .where({ ID: foto_ID });
-
-  const imagen = foto.imagen; // Extraer la imagen de los datos de la foto
+    .where({ID: foto_ID})
 
   // Configuración para el procesamiento de DOX (Extracción de Documentos)
   const options = {
@@ -41,8 +39,9 @@ module.exports = async function (request) {
   const auth_token = await cap_doxlib.auth_token();
 
   // Enviar la imagen para procesar usando DOX
-  let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
-  
+  // let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
+  let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
+
   if (job_id) {
       // Obtener el estado del trabajo de procesamiento en DOX
       let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
@@ -80,7 +79,7 @@ module.exports = async function (request) {
               coordinates_x: field.coordinates.x,
               coordinates_y: field.coordinates.y,
               coordinates_w: field.coordinates.w,
-              coordinates_h: field.coordinates.h
+              coordinates_h: field.coordinates.h,
             });
 
             valuesEntries.push({

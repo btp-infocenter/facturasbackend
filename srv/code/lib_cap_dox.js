@@ -79,7 +79,7 @@ async function set_groundtruth_body(headerFields, lineItems) {
     }
     return acc;
   }, { seen: new Set(), result: [] }).result;
-  
+
   let lineItems_obj = lineItems.reduce((acc, item) => {
     (acc[item.items_ID] ||= []).push({
       name: item.name,
@@ -95,7 +95,7 @@ async function set_groundtruth_body(headerFields, lineItems) {
   }, {});
 
   // Mapear los headerFields para crear un objeto con los campos y sus coordenadas.
-  headerFields = headerFields.map(item => ({
+  const headerFieldsObj = headerFields.map(item => ({
     name: item.name,
     value: item._value,
     coordinates: {
@@ -106,19 +106,21 @@ async function set_groundtruth_body(headerFields, lineItems) {
     }
   }));
 
-  lineItems = Object.values(lineItems_obj);
+  const lineItemsObj = Object.values(lineItems_obj);
 
   // Crea el payload que será enviado con headerFields y lineItems.
   const payload = {
     languages: ['en', 'es'],
     country: 'PY',
     extraction: {
-      headerFields: headerFields,
-      lineItems: lineItems
+      headerFields: headerFieldsObj,
+      lineItems: lineItemsObj
     }
   };
 
-  return JSON.stringify(payload); // Devuelve el payload en formato JSON.
+  const IDlist = headerFields.map(item => (item.value_ID)).concat(lineItems.map(item => (item.value_ID)))
+
+  return { ground_truth: JSON.stringify(payload), IDlist: IDlist }; // Devuelve el payload en formato JSON.
 }
 
 /**
@@ -262,7 +264,7 @@ async function post_job(imagen, options, auth_token) {
  * @returns {Object} - Resultado del envío de ground truth.
  */
 async function post_ground_truth(headerFields, lineItems, id, auth_token) {
-  var ground_truth = await set_groundtruth_body(headerFields, lineItems); // Prepara el cuerpo con el ground truth
+  var { ground_truth, IDlist } = await set_groundtruth_body(headerFields, lineItems); // Prepara el cuerpo con el ground truth
 
   let config = {
     method: 'post',
@@ -285,7 +287,7 @@ async function post_ground_truth(headerFields, lineItems, id, auth_token) {
       console.log(error.response.data.error); // [Advertencia] Manejo de errores al enviar ground truth
     });
 
-  return job_status; // Retorna el estado del trabajo o vacío si falla
+  return { job_status, IDlist }; // Retorna el estado del trabajo o vacío si falla
 }
 
 /**

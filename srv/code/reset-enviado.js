@@ -19,7 +19,7 @@ module.exports = async function (results, request) {
 		const dato = await SELECT.one
 			.columns('fotos_ID', 'items_ID')
 			.from(Datos)
-			.where({ ID: datos_ID });
+			.where({ID: datos_ID })
 
 		// Obtiene fotos_ID de Items si existe items_ID
 		const fotos_ID = dato.items_ID
@@ -40,7 +40,8 @@ module.exports = async function (results, request) {
 			console.warn("No se actualizaron filas. Verifica el estado actual.");
 		}
 	} catch (error) {
-		console.error("Error al procesar la actualización:", error); // Manejo de errores
+		console.error("Error al procesar la actualización:"); // Manejo de errores
+		request.error(error)
 	}
 
 

@@ -15,25 +15,22 @@ module.exports = async function (request) {
 		const { doxID } = await SELECT.one
 			.from(Fotos)
 			.columns('doxID')
-			.where({
-				ID: foto_ID
-			});
+			.where({ ID: foto_ID });
 
 		// Selecciona los campos principales (headerFields) de la entidad Datos, asociando los valores y las coordenadas.
 		const headerFields = await SELECT
 			.from(Datos)
+			.where({ fotos_ID: foto_ID })
 			.columns(
 				'ID',
 				'name',
 				'value.value as _value', // Alias a '_value' para evitar colisión de nombres.
+				'value.ID as value_ID',
 				'coordinates_x as coor_x',
 				'coordinates_y as coor_y',
 				'coordinates_h as coor_h',
 				'coordinates_w as coor_w'
 			)
-			.where({
-				fotos_ID: foto_ID // Filtra por el ID de la foto.
-			})
 			.orderBy({ 'value.createdAt': 'desc' }); // Ordena por la fecha de creación del valor, de manera descendente.
 
 		// Selecciona los items correspondientes desde la entidad Datos, donde items_ID está en la subconsulta de Items.
@@ -44,6 +41,7 @@ module.exports = async function (request) {
 				'name',
 				'items_ID',
 				'value.value as _value', // Alias a '_value' para valores de items.
+				'value.ID as value_ID',
 				'coordinates_x as coor_x',
 				'coordinates_y as coor_y',
 				'coordinates_h as coor_h',
@@ -60,20 +58,26 @@ module.exports = async function (request) {
 				'value.createdAt': 'desc',
 			});
 
+		const allDatos = await SELECT
+			.from(Datos)
+
 		// [Advertencia] El proceso de autenticación parece depender de una librería externa 'cap_doxlib', que no se encuentra definida en este código. 
 		const auth_token = await cap_doxlib.auth_token(); // Obtiene el token de autenticación para DOX.
 
 		// Envía los campos de encabezado y de línea a DOX usando la función post_ground_truth.
-		const res = await cap_doxlib.post_ground_truth(headerFields, lineItems, doxID, auth_token);
+		const {job_status, IDlist} = await cap_doxlib.post_ground_truth(headerFields, lineItems, doxID, auth_token);
 
 		// Verifica si la respuesta de la función post_ground_truth fue exitosa.
-		if (!res)
+		if (!job_status)
 			request.error("Error al enviar ground truth a DOX:");
+		else if (job_status.status != 'DONE')
+			request.error(`Error DOX: ${res.message}`);
 
-		return res;
+		return IDlist
 
 	} catch (error) {
 		// Maneja errores ocurridos durante el proceso de actualización y los envía en la respuesta.
-		request.error("Error al actualizar estados de enviado:", error);
+		console.error("Error al actualizar estados de enviado:")
+		request.error(error.message);
 	}
 }

@@ -44,8 +44,7 @@ service facturasbackendService
         {
             action enviar
             (
-            )
-            returns Fotos;
+            );
         };
 
     entity Datos as

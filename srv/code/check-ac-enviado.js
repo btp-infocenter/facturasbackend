@@ -16,30 +16,26 @@ module.exports = async function (request) {
 
     // [Advertencia] Consulta con SELECT.one, puede necesitar optimización si se hace en grandes volúmenes
     // Obtener el Dato y verificar campos 'autoCreado' y 'enviado'
+
+    const v = await SELECT.one
+        .from(Values)
+        .where({ID})
+
     const valor = await SELECT.one
         .columns('autoCreado', 'enviado')
         .from(Values)
-        .where({
-            ID: ID,
-        })
-        .and({
-            or: [
-                { autoCreado: true },
-                { enviado: true }
-            ]
-        });
+        .where({ID});
 
-    // Si el dato fue generado automáticamente, no permitir su modificación
-    if (valor.autoCreado) {
-        request.error('Los datos extraidos automáticamente no se pueden modificar');
-    } else {
-        console.log("👍 Check-autoGenerado");
-    }
+    // Función de validación para evitar duplicación de lógica
+    const validarCampo = (valor, campo, mensajeError) => {
+        if (valor[campo]) {
+            request.error(mensajeError);
+        } else {
+            console.log(`👍 Check ${campo}`);
+        }
+    };
 
-    // Si el dato ya fue enviado, no permitir su modificación
-    if (valor.enviado) {
-        request.error('Los datos enviados no se pueden modificar');
-    } else {
-        console.log("👍 Check-enviado");
-    }
+    // Validar restricciones
+    validarCampo(valor, 'autoCreado', 'Los datos extraidos automáticamente no se pueden modificar');
+    validarCampo(valor, 'enviado', 'Los datos enviados no se pueden modificar');
 }
