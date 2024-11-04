@@ -23,13 +23,13 @@ module.exports = async function (request) {
             enviado: true
         })
 
-    // Si el dato ya ha sido enviado, lanzar un error
-    if (foto) {
-        if (foto.enviado)
-            request.error('La foto ya ha sido enviada');
-        else if (!foto.procesado)
-            request.error('La foto aun no ha sido procesada');
-    } else {
-        console.log("👍 Check-enviado/procesado");
-    }
+    // // Si el dato ya ha sido enviado, lanzar un error
+    // if (foto) {
+    //     if (foto.enviado)
+    //         request.error('La foto ya ha sido enviada');
+    //     else if (!foto.procesado)
+    //         request.error('La foto aun no ha sido procesada');
+    // } else {
+    //     console.log("👍 Check-enviado/procesado");
+    // }
 }
