@@ -49,7 +49,11 @@
     {
       "type": "dpt.ptdeploy",
       "label": "Deploy facturasbackend",
-      "taskType": "Deploy"
+      "taskType": "Deploy",
+      "ui5version": "1.130.0",
+      "ui5theme": "sap_belize",
+      "vendorDependency": false,
+      "buildCodeServicePlan": false
     },
     {
       "type": "dpt.ptdeploy",

@@ -16,7 +16,7 @@ const cap_dox_key_uaa =
  * @param {string} auth_token - Token de autorización para la solicitud.
  * @returns {FormData} - Cuerpo preparado para la solicitud.
  */
-async function set_job_body(imagen, options, auth_token) {
+async function set_job_body(imagen, options, auth_token, ) {
   let mydata = new FormData();
 
   // Obtiene el schemaId si se proporciona el nombre del esquema
@@ -40,14 +40,14 @@ async function set_job_body(imagen, options, auth_token) {
   }
 
   // Convierte la imagen de base64 a un buffer y la inserta en el FormData.
-  const imageBuffer = Buffer.from(imagen, 'base64');
+  const imageBuffer = Buffer.from(imagen.base64, 'base64');
   const readStream = new Readable();
   readStream.push(imageBuffer);
   readStream.push(null);
 
   // Agrega la imagen y las opciones al FormData
   mydata.append('file', readStream, {
-    filename: 'image.jpg', // Nombre del archivo
+    filename: `${imagen.title}.jpg`, // Nombre del archivo
     contentType: 'image/jpeg'
   });
   mydata.append('options', JSON.stringify(options));
@@ -340,8 +340,8 @@ module.exports = {
   auth_token: async function () {
     return await get_token(); // Obtiene el token de autenticación
   },
-  post_job: async function (pdf, fileName, auth_token) {
-    return await post_job(pdf, fileName, auth_token); // Publica un nuevo trabajo con la imagen y opciones
+  post_job: async function (imagen, options, auth_token) {
+    return await post_job(imagen, options, auth_token); // Publica un nuevo trabajo con la imagen y opciones
   },
   get_job_status: async function (job_id, auth_token) {
     return await get_job_status(job_id, auth_token); // Consulta el estado del trabajo por su ID

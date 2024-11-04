@@ -35,12 +35,23 @@ module.exports = async function (request) {
     "candidateTemplateIds": ["facturaTemplate1"]
   };
 
+  const title = typeof process.env.cap_dox_key_uaa === 'undefined' ? 
+    `${new Date().toLocaleTimeString("es-US", {hour12: false, timeZone: "America/Sao_Paulo"})} [test]` : 
+    `${new Date().toLocaleTimeString("es-US", {hour12: false, 
+      
+      timeZone: "America/Sao_Paulo"})}`
+
   // Obtener token de autenticación para interactuar con DOX
   const auth_token = await cap_doxlib.auth_token();
 
+  const img = {
+    base64: imagen,
+    title: title
+  }
+
   // Enviar la imagen para procesar usando DOX
-  // let job_id = await cap_doxlib.post_job(imagen, options, auth_token);
-  let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
+  let job_id = await cap_doxlib.post_job(img, options, auth_token);
+  // let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
 
   if (job_id) {
       // Obtener el estado del trabajo de procesamiento en DOX
