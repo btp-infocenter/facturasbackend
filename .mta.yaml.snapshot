@@ -166,6 +166,10 @@ resources:
             - https://*.${default-domain}/login/*
         xsappname: facturasbackend-${space}
         role-collections:
+          - description: facturasManager
+            name: facturasbackend-facturasManager-${space}
+            role-template-references:
+              - $XSAPPNAME.facturasManager
           - description: ''
             name: facturasbackend-facturasUser-${space}
             role-template-references:

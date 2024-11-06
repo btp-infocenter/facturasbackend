@@ -1,58 +1,68 @@
-using { facturasbackend as my } from '../db/schema.cds';
+using {facturasbackend as my} from '../db/schema.cds';
 
-@path : '/service/facturasbackendService'
-service facturasbackendService
-{
-    annotate Datos with @restrict :
-    [
-        { grant : [ 'READ' ], to : [ 'facturasUser' ] }
+@path: '/service/facturasbackendService'
+service facturasbackendService {
+    annotate Datos with @restrict: [
+        {
+            grant: ['READ'],
+            to   : ['facturasUser']
+        },
+        {
+            grant: '*',
+            to   : ['facturasManager']
+
+            
+        }
     ];
 
-    annotate Fotos with @restrict :
-    [
-        { grant : [ 'READ', 'CREATE', 'UPDATE', 'enviar' ], to : [ 'facturasUser' ] }
+    annotate Fotos with @restrict: [
+        {
+            grant: [
+                'READ',
+                'CREATE',
+                'UPDATE',
+                'DELETE',
+                'enviar'
+            ],
+            to   : ['facturasManager']
+        },
+        {
+            grant: [
+                'READ',
+                'CREATE',
+                'UPDATE',
+                'enviar'
+            ],
+            to   : ['facturasUser']
+        }
     ];
 
-    annotate Items with @restrict :
-    [
-        { grant : [ 'READ' ], to : [ 'facturasUser' ] }
-    ];
+    annotate Items with @restrict: [{
+        grant: ['READ'],
+        to   : ['facturasUser']
+    }];
 
-    annotate Values with @restrict :
-    [
-        { grant : [ 'READ', 'CREATE', 'UPDATE' ], to : [ 'facturasUser' ] }
-    ];
-
-    annotate Values with @Aggregation.ApplySupported : 
-    {
-        $Type : 'Aggregation.ApplySupportedType',
-        GroupableProperties :
-        [
-            datos_ID
+    annotate Values with @restrict: [{
+        grant: [
+            'READ',
+            'CREATE',
+            'UPDATE'
         ],
-        AggregatableProperties :
-        [
-            {
-                Property : createdAt
-            }
-        ]
+        to   : ['facturasUser']
+    }];
+
+    annotate Values with @Aggregation.ApplySupported: {
+        $Type                 : 'Aggregation.ApplySupportedType',
+        GroupableProperties   : [datos_ID],
+        AggregatableProperties: [{Property: createdAt}]
     };
 
-    entity Fotos as
-        projection on my.Fotos
-        actions
-        {
-            action enviar
-            (
-            );
+    entity Fotos  as projection on my.Fotos
+        actions {
+            action enviar();
         };
 
-    entity Datos as
-        projection on my.Datos;
-
-    entity Items as
-        projection on my.Items;
-
-    entity Values as
-        projection on my.Values;
+    entity Datos  as projection on my.Datos;
+    entity Items  as projection on my.Items;
+    entity Values as projection on my.Values;
 }

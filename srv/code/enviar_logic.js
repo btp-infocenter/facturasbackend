@@ -12,32 +12,32 @@ module.exports = async function (request) {
 	const foto_ID = request.params[0]; // Obtiene el parámetro 'foto_ID' de la solicitud.
 
 	const data = {
-        fecha: "2024-10-04",
-        factura: "001-001-1234567",
-        timbrado: "123456",
-        ruc: "365989-8",
-        proveedor: "5455",
-        rendicion: "",
-        concepto: "",
-        totalNeto: "5000",
-        moneda: "PYG",
-        lineItems: [
-            {
-                codigo: "1",
-                cantidad: "10",
-                valorBruto: "500",
-                indImpuesto: ""
-            },
-            {
-                codigo: "2",
-                cantidad: "1",
-                valorBruto: "650",
-                indImpuesto: ""
-            }
-        ]
-    }
+		fecha: "2024-11-04",
+		factura: "001-001-1234567",
+		timbrado: "123456",
+		ruc: "1548979-6",
+		proveedor: "",
+		endicion: "nro rendicion",
+		concepto: "concepto actura",
+		totalNeto: "10000",
+		moneda: "PYG",
+		lineItems: [
+			{
+				codigo: "1",
+				cantidad: "10",
+				valorBruto: "5000",
+				indImpuesto: "0"
+			},
+					{
+				codigo: "1",
+				cantidad: "10",
+				valorBruto: "5000",
+				indImpuesto: "0"
+	        }
+	    ]
+	}
 
-	const r = post_factura(data)
+	const r = await post_factura(data)
 
 	console.log(r)
 	return r
