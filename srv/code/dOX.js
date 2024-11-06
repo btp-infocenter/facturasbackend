@@ -15,9 +15,9 @@ module.exports = async function (request) {
   console.log('Starting extraction ...'); // Indicar que comienza la extracción
 
   // Obtener la imagen de la foto desde la base de datos
-  const {imagen} = await SELECT.one
+  const { imagen, mimetype } = await SELECT.one
     .from(Fotos)
-    .columns(['imagen'])
+    .columns(['imagen', 'mimetype'])
     .where({ID: foto_ID})
 
   // Configuración para el procesamiento de DOX (Extracción de Documentos)
@@ -46,7 +46,8 @@ module.exports = async function (request) {
 
   const img = {
     base64: imagen,
-    title: title
+    title: title,
+    mimetype: mimetype
   }
 
   // Enviar la imagen para procesar usando DOX

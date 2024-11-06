@@ -47,8 +47,8 @@ async function set_job_body(imagen, options, auth_token, ) {
 
   // Agrega la imagen y las opciones al FormData
   mydata.append('file', readStream, {
-    filename: `${imagen.title}.jpg`, // Nombre del archivo
-    contentType: 'image/jpeg'
+    filename: `${imagen.title}.${imagen.mimetype}`,
+    contentType: `image/${imagen.mimetype}`
   });
   mydata.append('options', JSON.stringify(options));
 

@@ -13,7 +13,8 @@ describe('Crear entradas', () => {
 
   it('Crear Foto', async () => {
     const newFoto = {
-      ID: '99999999-0000-1111-2222-aaaabbbbcccc'
+      ID: '99999999-0000-1111-2222-aaaabbbbcccc',
+      mimetype: 'jpeg'
     };
 
     const postResponse = await request
