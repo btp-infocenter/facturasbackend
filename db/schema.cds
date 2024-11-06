@@ -15,6 +15,7 @@ entity Fotos : cuid, managed {
                       on datosItems.fotos = $self;
     doxID       : String(50);
     status      : String(50);
+    mimetype    : String(5);
 }
 
 type Coordinates {
