@@ -20,7 +20,7 @@ service facturasbackendService
 
     annotate Values with @restrict :
     [
-        { grant : [ 'READ', 'CREATE', 'UPDATE' ], to : [ 'facturasUser' ] }
+        { grant : [ '*' ], to : [ 'facturasUser' ] }
     ];
 
     annotate Values with @Aggregation.ApplySupported : 
