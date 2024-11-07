@@ -1,18 +1,11 @@
 using {facturasbackend as my} from '../db/schema.cds';
 
-@path: '/service/facturasbackendService'
-service facturasbackendService {
-    annotate Datos with @restrict: [
-        {
-            grant: ['READ'],
-            to   : ['facturasUser']
-        },
-        {
-            grant: '*',
-            to   : ['facturasManager']
-
-            
-        }
+@path : '/service/facturasbackendService'
+service facturasbackendService
+{
+    annotate Datos with @restrict :
+    [
+        { grant : [ 'READ', 'UPDATE' ], to : [ 'facturasUser' ] }
     ];
 
     annotate Fotos with @restrict: [
