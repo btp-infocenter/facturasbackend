@@ -5,7 +5,7 @@ service facturasbackendService
 {
     annotate Datos with @restrict :
     [
-        { grant : [ 'READ' ], to : [ 'facturasUser' ] }
+        { grant : [ 'READ', 'UPDATE' ], to : [ 'facturasUser' ] }
     ];
 
     annotate Fotos with @restrict :
