@@ -35,14 +35,10 @@ service facturasbackendService
         to   : ['facturasUser']
     }];
 
-    annotate Values with @restrict: [{
-        grant: [
-            'READ',
-            'CREATE',
-            'UPDATE'
-        ],
-        to   : ['facturasUser']
-    }];
+    annotate Values with @restrict :
+    [
+        { grant : [ '*' ], to : [ 'facturasUser' ] }
+    ];
 
     annotate Values with @Aggregation.ApplySupported: {
         $Type                 : 'Aggregation.ApplySupportedType',
