@@ -18,28 +18,51 @@ module.exports = async function (request) {
   const { imagen, mimetype } = await SELECT.one
     .from(Fotos)
     .columns(['imagen', 'mimetype'])
-    .where({ID: foto_ID})
+    .where({ ID: foto_ID })
 
   // Configuración para el procesamiento de DOX (Extracción de Documentos)
   const options = {
     "headerFields": [
-      "nombreRemitente",
-      "rucRemitente",
-      "timbrado"
+      "fechaFactura",
+      "nroFactura",
+      "timbrado",
+      "ruc",
+      "rucCliente",
+      "nombre",
+      "direccion",
+      "ciudad",
+      "telefono",
+      "condVenta",
+      "totalFactura",
+      "totalIva5",
+      "totalIva10",
+      "moneda"
     ],
-    "lineItemFields": ["descripcion"],
+    "lineItemFields": [
+      "descripcion",
+      "cantidad",
+      "importe",
+      "precioUnitario",
+      "indImpuesto",
+      "codigo"
+    ],
     "clientId": "default",
     "documentType": "invoice",
-    "schemaName": "facturaSchema",
+    "schemaName": "facturasCajaChicaS4Esquema",
     "templateId": "detect",
-    "candidateTemplateIds": ["facturaTemplate1"]
+    "candidateTemplateIds": [
+      "electronicasBelliniCajaChicaS4Plantilla",
+      "electronicasBiggieCajaChicaS4Plantilla"
+    ]
   };
 
-  const title = typeof process.env.cap_dox_key_uaa === 'undefined' ? 
-    `${new Date().toLocaleTimeString("es-US", {hour12: false, timeZone: "America/Sao_Paulo"})} [test]` : 
-    `${new Date().toLocaleTimeString("es-US", {hour12: false, 
-      
-      timeZone: "America/Sao_Paulo"})}`
+  const title = typeof process.env.cap_dox_key_uaa === 'undefined' ?
+    `${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })} [test]` :
+    `${new Date().toLocaleTimeString("es-US", {
+      hour12: false,
+
+      timeZone: "America/Sao_Paulo"
+    })}`
 
   // Obtener token de autenticación para interactuar con DOX
   const auth_token = await cap_doxlib.auth_token();
@@ -52,73 +75,47 @@ module.exports = async function (request) {
 
   // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(img, options, auth_token);
+  console.log(`>>>${job_id}<<<`)
   // let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
 
   if (job_id) {
-      // Obtener el estado del trabajo de procesamiento en DOX
-      let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
+    // Obtener el estado del trabajo de procesamiento en DOX
+    let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
 
-      // Campos de cabecera extraídos por DOX
-      const headerFields = dox_output.extraction.headerFields;
-      const lineItems = dox_output.extraction.lineItems;
-      const headerFieldNames = options.headerFields;
-      const itemsFieldNames = options.lineItemFields;
+    // Campos de cabecera extraídos por DOX
+    const headerFields = dox_output.extraction.headerFields;
+    const lineItems = dox_output.extraction.lineItems;
+    const headerFieldNames = options.headerFields;
+    const itemsFieldNames = options.lineItemFields;
 
-      // Arrays para almacenar las entradas de las tablas
-      let itemsEntries = [];
-      let datosEntries = [];
-      let valuesEntries = [];
+    // Arrays para almacenar las entradas de las tablas
+    let itemsEntries = [];
+    let datosEntries = [];
+    let valuesEntries = [];
 
-      // Procesar cada línea de ítems extraídos
-      for (let iitem of lineItems) {
-        let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
-        itemsEntries.push({
-          ID: itemid,
-          fotos_ID: foto_ID
-        });
+    // Procesar cada línea de ítems extraídos
+    for (let iitem of lineItems) {
+      let itemid = cap_doxlib.randomId(foto_ID); // Generar un nuevo ID para el ítem
+      itemsEntries.push({
+        ID: itemid,
+        fotos_ID: foto_ID
+      });
 
-        // Extraer los campos relacionados con los ítems
-        for (let field of iitem) {
-          if (itemsFieldNames.includes(field.name)) {
-            let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
-
-            datosEntries.push({
-              ID: datoid,
-              items_ID: itemid,
-              name: field.name,
-              confidence: field.confidence,
-              model: field.type,
-              coordinates_x: field.coordinates.x,
-              coordinates_y: field.coordinates.y,
-              coordinates_w: field.coordinates.w,
-              coordinates_h: field.coordinates.h,
-            });
-
-            valuesEntries.push({
-              datos_ID: datoid,
-              value: field.value,
-              autoCreado: true,
-              enviado: false
-            });
-          }
-        }
-      }
-
-      // Procesar los campos de cabecera extraídos
-      for (let field of headerFields) {
-        if (headerFieldNames.includes(field.name)) {
+      // Extraer los campos relacionados con los ítems
+      for (let field of iitem) {
+        if (itemsFieldNames.includes(field.name)) {
           let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
 
           datosEntries.push({
             ID: datoid,
-            fotos_ID: foto_ID,
+            items_ID: itemid,
             name: field.name,
             confidence: field.confidence,
             model: field.type,
             coordinates_x: field.coordinates.x,
             coordinates_y: field.coordinates.y,
             coordinates_w: field.coordinates.w,
-            coordinates_h: field.coordinates.h
+            coordinates_h: field.coordinates.h,
           });
 
           valuesEntries.push({
@@ -129,18 +126,45 @@ module.exports = async function (request) {
           });
         }
       }
+    }
 
-      // Insertar las entradas en las tablas Items, Datos y Values
-      await INSERT.into(Items).entries(itemsEntries);
-      await INSERT.into(Datos).entries(datosEntries);
-      await INSERT.into(Values).entries(valuesEntries);
+    // Procesar los campos de cabecera extraídos
+    for (let field of headerFields) {
+      if (headerFieldNames.includes(field.name)) {
+        let datoid = cap_doxlib.randomId(foto_ID); // Generar ID para los datos extraídos
 
-      // Actualizar la entidad Fotos con el ID y el estado del trabajo de DOX
-      await UPDATE.entity(Fotos)
-        .data({
-          doxID: job_id,
-          status: dox_output.status
+        datosEntries.push({
+          ID: datoid,
+          fotos_ID: foto_ID,
+          name: field.name,
+          confidence: field.confidence,
+          model: field.type,
+          coordinates_x: field.coordinates.x,
+          coordinates_y: field.coordinates.y,
+          coordinates_w: field.coordinates.w,
+          coordinates_h: field.coordinates.h
         });
+
+        valuesEntries.push({
+          datos_ID: datoid,
+          value: field.value,
+          autoCreado: true,
+          enviado: false
+        });
+      }
+    }
+
+    // Insertar las entradas en las tablas Items, Datos y Values
+    await INSERT.into(Items).entries(itemsEntries);
+    await INSERT.into(Datos).entries(datosEntries);
+    await INSERT.into(Values).entries(valuesEntries);
+
+    // Actualizar la entidad Fotos con el ID y el estado del trabajo de DOX
+    await UPDATE.entity(Fotos)
+      .data({
+        doxID: job_id,
+        status: dox_output.status
+      });
 
   } else {
     // Mostrar error si no se puede inicializar el procesamiento en DOX

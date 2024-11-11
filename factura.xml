@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Length: 326
+Content-Type: application/json; charset=utf-8
+Date: Mon, 11 Nov 2024 12:59:17 GMT
+Sap-Perf-Fesrec: 52330.000000
+Sap-Server: true
+Server: envoy
+Set-Cookie: ARBE=4be2429afa4a16762b217827edf4730fceb511a46b93fdcf369716bda11f9c73c5e4956e6d8ed20db5d88d29c12edf70b4a4453f5b617aec396233fad43290e3; Path=/; HttpOnly;
+Vary: Accept-Encoding
+X-Envoy-Upstream-Service-Time: 299
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 6cc13f76-9c1f-4fe1-9701-e55e10264657
+
+{"fechaFactura":"","nroFactura":"","creadoPor":"","timbrado":"","ruc":"","nombre":"200","direccion":"","ciudad":"","telefono":"","nroRendicion":"","concepto":"","condVenta":"","totalFactura":"","totalIva5":"","totalIva10":"","moneda":"","lineItems":[{"codigo":"","descripcion":"","cantidad":"","importe":"","indImpuesto":""}]}

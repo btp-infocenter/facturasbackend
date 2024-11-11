@@ -16,39 +16,36 @@ const { executeHttpRequest } = require("@sap-cloud-sdk/http-client");
 let cookies = "";
 
 setTestDestination({
-    authentication: "NoAuthentication",
-    name: "s4",
-    isTrustingAllCertificates: true,
-    url: "http://10.20.10.144:8000/sap/bc/rest/dox/factura?sap-client=100",
+    name: "INFOCENTER_200",
+    url: "http://10.20.10.144:8000/sap/bc/rest/dox/factura",
 });
 
 async function post_factura(obj) {
-    var basic_auth = cap_s4_key_uaa.clientid + ':' + cap_s4_key_uaa.clientsecret;
-
-    console.log("[01]")
-
     try {
         const result = await executeHttpRequest(
-            { destinationName: "s4" },
+            { destinationName: "INFOCENTER_200" },
             {
                 method: "post",
                 url: '',
                 headers: {
-                    'Authorization': 'Basic ' + Buffer.from(basic_auth).toString('base64'),
                     'Accept': 'application/json'
                 },
                 data: obj,
             }
         );
-        console.log("[03]")
 
-        return result
+        if (result.data[0].type == 'S') {
+            console.log('[10]',result.data[0].message,'[10]')
+            return result.data[0].message
+        } else {
+            return { error: result.data }
+        }
     } catch (error) {
         // console.error("Error at [post_facturas]:", error)
         console.log("[02]")
         return { error: error.data }
     }
-    
+
 }
 
 module.exports = {

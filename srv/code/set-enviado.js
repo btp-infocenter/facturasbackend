@@ -17,7 +17,7 @@ module.exports = async function (results, request) {
 	const foto_ID = request.params[0]; // Obtiene el ID de la foto a partir de los parámetros de la solicitud.
 	const IDlist = results
 
-	console.log(IDlist)
+	// console.log(IDlist)
 
 	try {
 		// Actualiza el estado de la Foto a 'enviado'
@@ -33,7 +33,7 @@ module.exports = async function (results, request) {
 			await UPDATE.entity(Values)
 				.set({ enviado: true })
 				.where({ ID: id });
-			console.log(id)
+			// console.log(id)
 		}
 
 		const foto = await SELECT.one.from(Fotos).columns('enviado').where({

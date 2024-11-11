@@ -197,7 +197,7 @@ async function get_template(templateName, options, auth_token) {
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'templates?clientId=' + options.clientId + '&schemaId=' + options.schemaId,
+    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + '/templates?clientId=' + options.clientId + '&schemaId=' + options.schemaId,
     headers: {
       'Authorization': auth_token,
       'Accept': 'application/json'
