@@ -7,6 +7,7 @@ using {
 
 entity Fotos : cuid, managed {
     imagen      : LargeString;
+    imagenSmall : LargeString;
     enviado     : Boolean default false;
     procesado   : Boolean default false;
     datosHeader : Composition of many Datos

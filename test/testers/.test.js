@@ -332,7 +332,7 @@ describe('Manipular Datos', () => {
   });
 });
 
-describe('Mandar a B1', () => {
+describe('Mandar a S4', () => {
   let request, server;
 
   beforeAll(async () => {
