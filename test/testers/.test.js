@@ -369,6 +369,14 @@ describe('Mandar a S4', () => {
     expect(getNewValue.body.value).toBe(true);
   });
 
+  it('check s4doc', async () => {
+    const getFoto = await request
+      .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/s4doc')
+      .expect(200);
+
+    expect(getFoto.body.value).not.toBe(null);
+  });
+
   afterAll(async () => {
     if (server && server.close) {
       server.close();

@@ -118,6 +118,8 @@ module.exports = async function (request) {
 		console.log(`Company Code:    ${r.split(" ").at(-2).slice(-8, -4)}`)
 		console.log(`Fiscar Year:     ${r.split(" ").at(-2).slice(-4)}`)
 
+		const s4doc = r.split(" ").at(-2).slice(0, -8)
+
 		const auth_token = await cap_doxlib.auth_token(); // Obtiene el token de autenticación para DOX.
 
 		// Envía los campos de encabezado y de línea a DOX usando la función post_ground_truth.
@@ -129,7 +131,7 @@ module.exports = async function (request) {
 		else if (job_status.status != 'DONE')
 			request.error(`Error DOX: ${res.message}`);
 
-		return IDlist
+		return { IDlist, s4doc}
 
 	} catch (error) {
 		// Maneja errores ocurridos durante el proceso de actualización y los envía en la respuesta.

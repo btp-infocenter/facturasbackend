@@ -15,14 +15,14 @@ const { set_groundtruth_body } = require('./lib_cap_dox'); // Importar librería
 module.exports = async function (results, request) {
 	const { Fotos, Items, Datos, Values } = cds.entities('facturasbackendService'); // Accede a las entidades Fotos, Items, Datos y Values.
 	const foto_ID = request.params[0]; // Obtiene el ID de la foto a partir de los parámetros de la solicitud.
-	const IDlist = results
+	const { IDlist, s4doc } = results
 
 	// console.log(IDlist)
 
 	try {
 		// Actualiza el estado de la Foto a 'enviado'
 		await UPDATE.entity(Fotos)
-			.set({ enviado: true })
+			.set({ enviado: true, s4doc: s4doc })
 			.where({ ID: foto_ID })
 		console.log("👍 set-foto.enviado(true)"); // Confirma la actualización del estado de la foto.
 

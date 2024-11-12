@@ -15,6 +15,7 @@ entity Fotos : cuid, managed {
     datosItems  : Composition of many Items
                       on datosItems.fotos = $self;
     doxID       : String(50);
+    s4doc       : String(50);
     status      : String(50);
     mimetype    : String(5);
 }
