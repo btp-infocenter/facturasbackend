@@ -90,7 +90,7 @@ module.exports = async function (request) {
 			nroFactura: hfValues.nroFactura,
 			creadoPor: "Bruno Bordon",
 			timbrado: hfValues.timbrado,
-			ruc: "1548979-6",
+			ruc: "1548979-60",
 			nombre: hfValues.nombre,
 			direccion: hfValues.direccion,
 			ciudad: hfValues.ciudad,
@@ -107,7 +107,7 @@ module.exports = async function (request) {
 
 		const r = await post_factura(data)
 
-		if (r.error) {
+		if (r.error != undefined) {
 			console.error("Error al crear registro en S4:")
 			request.error(r.error);
 			return

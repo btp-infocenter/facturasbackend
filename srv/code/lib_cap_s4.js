@@ -41,8 +41,7 @@ async function post_factura(obj) {
             return { error: result.data }
         }
     } catch (error) {
-        // console.error("Error at [post_facturas]:", error)
-        console.log("[02]")
+        console.error("Error at [post_facturas]:", error)
         return { error: error.data }
     }
 

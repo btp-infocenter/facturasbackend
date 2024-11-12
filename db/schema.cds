@@ -48,7 +48,7 @@ entity Items {
 }
 
 entity Values : cuid, managed {
-    value      : String(100);
+    value      : String(250);
     autoCreado : Boolean default false;
     enviado    : Boolean default false;
     datos      : Association to one Datos
