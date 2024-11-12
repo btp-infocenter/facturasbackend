@@ -10,7 +10,7 @@ Content-Type: application/json
   
 }
 
-### WATCH Values
+### WATCH Values 
 GET {{baseUrl}}/service/facturasbackendService/Values
 
 ### WATCH Datos
@@ -26,7 +26,7 @@ Content-Typce: application/json
 }
 
 
-### Send to B1
+### Send to B1 
 POST {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/facturasbackendService.enviar
 Content-Type: application/json
 

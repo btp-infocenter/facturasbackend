@@ -211,14 +211,6 @@ describe('Manipular Datos', () => {
   });
 
   it('verificar datos', async () => {
-    const getResponse = await request
-      .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosHeader')
-      .expect(200)
-
-    expect(Array.isArray(getResponse.body.value)).toBe(true)
-  });
-
-  it('verificar items', async () => {
     const getResponse1 = await request
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosHeader')
       .expect(200)
@@ -245,7 +237,7 @@ describe('Manipular Datos', () => {
     const getResponse1 = await request
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
-    
+
     expect(getResponse1.body.value).not.toBe("modifyvalue");
 
     const patchResponse = await request
@@ -261,7 +253,7 @@ describe('Manipular Datos', () => {
     const getResponse2 = await request
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
-    
+
     expect(getResponse2.body.value).not.toBe("modifyvalue");
 
     const posthResponse = await request
@@ -275,7 +267,7 @@ describe('Manipular Datos', () => {
     const getResponse3 = await request
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
-    
+
     expect(getResponse3.body.value).not.toBe("modifyvalue");
   });
 

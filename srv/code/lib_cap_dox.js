@@ -245,7 +245,7 @@ async function post_job(imagen, options, auth_token) {
   let job_id = '';
   job_id = await axios.request(config)
     .then((response) => {
-      console.log(`JOB Post ID: ' ${JSON.stringify(response.data.id)}`); // Registro del ID del trabajo creado
+      // console.log(`JOB Post ID: ' ${JSON.stringify(response.data.id)}`); // Registro del ID del trabajo creado
       return response.data.id; // Retorna el ID del trabajo creado
     })
     .catch((error) => {
@@ -301,7 +301,7 @@ async function get_job_status(job_id, auth_token) {
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id,
+    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id + '?returnNullValues=true',
     headers: { 'Authorization': auth_token }
   };
 

@@ -36,7 +36,9 @@ module.exports = async function (request) {
       "totalFactura",
       "totalIva5",
       "totalIva10",
-      "moneda"
+      "moneda",
+      "codigoQR",
+      "cdc"
     ],
     "lineItemFields": [
       "descripcion",
@@ -48,21 +50,16 @@ module.exports = async function (request) {
     ],
     "clientId": "default",
     "documentType": "invoice",
-    "schemaName": "facturasCajaChicaS4Esquema",
+    "schemaName": "facturasCajaChicaS4Esquema3",
     "templateId": "detect",
     "candidateTemplateIds": [
-      "electronicasBelliniCajaChicaS4Plantilla",
-      "electronicasBiggieCajaChicaS4Plantilla"
+      "facturasCajaChicaS4Plantilla3"
     ]
   };
 
   const title = typeof process.env.cap_dox_key_uaa === 'undefined' ?
     `${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })} [test]` :
-    `${new Date().toLocaleTimeString("es-US", {
-      hour12: false,
-
-      timeZone: "America/Sao_Paulo"
-    })}`
+    `${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })}`
 
   // Obtener token de autenticación para interactuar con DOX
   const auth_token = await cap_doxlib.auth_token();
@@ -75,7 +72,11 @@ module.exports = async function (request) {
 
   // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(img, options, auth_token);
-  console.log(`>>>${job_id}<<<`)
+  // let job_id = '88fa45c8-62c3-4fd0-bf03-8c0e747fcacd'
+  // console.log('> > > > >')
+  // console.log('> > ATENCION: JOB_ID COMO CONSTANTE < < < < ')
+  // console.log('> > > > >')
+  console.log(`DOX id >>> ${job_id} <<<`)
   // let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
 
   if (job_id) {
@@ -83,10 +84,19 @@ module.exports = async function (request) {
     let dox_output = await cap_doxlib.get_job_status(job_id, auth_token);
 
     // Campos de cabecera extraídos por DOX
-    const headerFields = dox_output.extraction.headerFields;
+    let headerFields = dox_output.extraction.headerFields;
     const lineItems = dox_output.extraction.lineItems;
     const headerFieldNames = options.headerFields;
     const itemsFieldNames = options.lineItemFields;
+
+    if (headerFields.find(item => item.name == "totalFactura").value == null) {
+      const monto = lineItems
+        .flatMap(item => item) // Flatten nested arrays
+        .filter(subItem => subItem.name === "importe") // Only "importe" items
+        .reduce((total, subItem) => total + subItem.value, 0); // Sum the "importe" values
+
+        headerFields.find(item => item.name == "totalFactura").value = monto;
+    }
 
     // Arrays para almacenar las entradas de las tablas
     let itemsEntries = [];
@@ -118,12 +128,14 @@ module.exports = async function (request) {
             coordinates_h: field.coordinates.h,
           });
 
-          valuesEntries.push({
-            datos_ID: datoid,
-            value: field.value,
-            autoCreado: true,
-            enviado: false
-          });
+          if (field.value != null) {
+            valuesEntries.push({
+              datos_ID: datoid,
+              value: field.value,
+              autoCreado: true,
+              enviado: false
+            });
+          }
         }
       }
     }
@@ -145,12 +157,14 @@ module.exports = async function (request) {
           coordinates_h: field.coordinates.h
         });
 
-        valuesEntries.push({
-          datos_ID: datoid,
-          value: field.value,
-          autoCreado: true,
-          enviado: false
-        });
+        if (field.value != null) {
+          valuesEntries.push({
+            datos_ID: datoid,
+            value: field.value,
+            autoCreado: true,
+            enviado: false
+          });
+        }
       }
     }
 
