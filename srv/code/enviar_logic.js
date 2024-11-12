@@ -90,7 +90,7 @@ module.exports = async function (request) {
 			nroFactura: hfValues.nroFactura,
 			creadoPor: "Bruno Bordon",
 			timbrado: hfValues.timbrado,
-			ruc: "1548979-60",
+			ruc: "1548979-6",
 			nombre: hfValues.nombre,
 			direccion: hfValues.direccion,
 			ciudad: hfValues.ciudad,
