@@ -72,10 +72,12 @@ module.exports = async function (request) {
 
   // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(img, options, auth_token);
-  // let job_id = '88fa45c8-62c3-4fd0-bf03-8c0e747fcacd'
+
+  // let job_id = '51f74487-b024-49a1-a4e3-87cc815f26f1'
   // console.log('> > > > >')
   // console.log('> > ATENCION: JOB_ID COMO CONSTANTE < < < < ')
   // console.log('> > > > >')
+
   console.log(`DOX id >>> ${job_id} <<<`)
   // let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
 
@@ -119,7 +121,7 @@ module.exports = async function (request) {
           datosEntries.push({
             ID: datoid,
             items_ID: itemid,
-            name: field.name,
+            name: field.label,
             confidence: field.confidence,
             model: field.type,
             coordinates_x: field.coordinates.x,

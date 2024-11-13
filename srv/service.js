@@ -17,9 +17,7 @@ class facturasbackendService extends LCAPApplicationService {
             return next();
         });
 
-        this.after('CREATE', 'Values', async (results, request) => {
-            await reset_Enviado(results, request);
-        });
+        
 
         this.before('enviar', 'Fotos', async (request) => {
             await check_Enviado(request);

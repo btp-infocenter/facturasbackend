@@ -215,10 +215,15 @@ describe('Manipular Datos', () => {
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosHeader')
       .expect(200)
 
+    console.log("$ dato:", getResponse1.body)
+
     expect(getResponse1.body).toHaveProperty('value')
     expect(Array.isArray(getResponse1.body.value)).toBe(true)
-    dato = getResponse1.body.value[0].ID
 
+    dato = getResponse1.body.value[0].ID
+  });
+
+  it('verificar item', async () => {
     const getResponse2 = await request
       .get(`/service/facturasbackendService/Datos/${dato}/value`)
       .expect(200)
