@@ -15,10 +15,12 @@ const { executeHttpRequest } = require("@sap-cloud-sdk/http-client");
 
 let cookies = "";
 
-setTestDestination({
-    name: "INFOCENTER_200",
-    url: "http://10.20.10.144:8000/sap/bc/rest/dox/factura",
-});
+if (typeof process.env.cap_s4_key_uaa === "undefined") {
+    setTestDestination({
+        name: "INFOCENTER_200",
+        url: "http://10.20.10.144:8000",
+    });
+}
 
 async function post_factura(obj) {
     try {
@@ -26,7 +28,7 @@ async function post_factura(obj) {
             { destinationName: "INFOCENTER_200" },
             {
                 method: "post",
-                url: '',
+                url: '/sap/bc/rest/dox/factura',
                 headers: {
                     'Accept': 'application/json'
                 },
@@ -35,7 +37,7 @@ async function post_factura(obj) {
         );
 
         if (result.data[0].type == 'S') {
-            console.log('[10]',result.data[0].message,'[10]')
+            console.log('[10]', result.data[0].message, '[10]')
             return result.data[0].message
         } else {
             return { error: result.data }

@@ -1,5 +1,5 @@
 {
   "ProjectOverviewURL": "https://infocenter-6w9v25lp.launchpad.cfapps.us10.hana.ondemand.com/lcapfacturasbackend.facturasbackendLaunchpad-1.0.0/",
-  "DeployedUTCTime": "2024-11-12T19:02:23.133Z",
+  "DeployedUTCTime": "2024-11-12T20:59:01.223Z",
   "ApplicationLogURL": "https://logs.cf.us10-001.hana.ondemand.com/app/dashboards#/view/Overview?_g=(filters:!((query:(match_phrase:(component_name:facturasbackend-srv)))))"
 }
