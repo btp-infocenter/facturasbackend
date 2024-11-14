@@ -2,13 +2,22 @@
 
 @imgNP = e35b60f0-cdd7-42a9-812d-97cf4a1008c5
 
-### Procesar DOX ###
+### Procesar DOX ### 
 POST {{baseUrl}}/service/uploadPhoto/Fotos({{imgNP}})/uploadPhoto.dox
 Content-Type: application/json
 
 {
   
 }
+
+### tryto MODIVY VALUES
+PATCH {{baseUrl}}/service/facturasbackendService/Values(0bfedc04-0681-45b0-bd8e-126df7fd7e34)
+Content-Type: application/json
+
+{
+  "value": "newvalue"
+}
+
 
 ### WATCH Values 
 GET {{baseUrl}}/service/facturasbackendService/Values
@@ -50,3 +59,6 @@ GET {{baseUrl}}/service/facturasbackendService/Datos
 
 ###
 GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/datosHeader
+
+### DATOS METADATA
+GET {{baseUrl}}/service/facturasbackendService/$metadata

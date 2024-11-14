@@ -13,8 +13,12 @@ Content-Type: application/json
 ### GET FOTO
 GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})
 
-### GET DATOS ITEMS 
+### GET DATOS ITEMS  
 GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/datosItems
+
+###
+GET {{baseUrl}}/service/facturasbackendService/Datos
+
 
 ### GET DATOS HEADER
 # @name header
@@ -25,12 +29,12 @@ GET {{baseUrl}}/service/facturasbackendService/Fotos({{imgNP}})/datosHeader
 
 ### GET VALUES
 # @name values
-GET {{baseUrl}}/service/facturasbackendService/Datos({{dato}})/value
+GET {{baseUrl}}/service/facturasbackendService/Datos?$expand=value
 
 ###
-@value = {{values.response.body.value[0].ID}}
+@value = {{values.response.body.value[0].ID}} 
 
-### GET VALUE
+### GET VALUE 
 GET {{baseUrl}}/service/facturasbackendService/Values({{value}})
 
 
@@ -39,13 +43,13 @@ POST {{baseUrl}}/service/facturasbackendService/Values
 Content-Type: application/json
 
 {
-    "value": "newvalue",
-    "datos_ID": "{{dato}}"
+    "value": "1234567",
+    "datos_ID": "e35b60f0-cdd7-42a9-812d-1967dcc02d45"
 }
 
 
 ### CHECK VALUES
-GET {{baseUrl}}/service/facturasbackendService/Values?$filter=datos_ID eq {{dato}}
+GET {{baseUrl}}/service/facturasbackendService/Values?$filter=datos_ID eq e35b60f0-cdd7-42a9-812d-1967588a8b87
 
 
 ### ENVIAR DATOS

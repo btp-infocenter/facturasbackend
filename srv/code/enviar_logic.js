@@ -103,12 +103,14 @@ module.exports = async function (request) {
 			lineItems: valuesLI.map(item => item.values)
 		}
 
+		console.log('Enviando a S4 ...')
+
 		const r = await post_factura(data)
 
 		if (r.error != undefined) {
-			console.error("Error al crear registro en S4:")
-			request.error(r.error);
-			return
+			console.log("Error al crear registro en S4:")
+			request.error(JSON.stringify(r.error.map(item => item.message)));
+			return({error: JSON.stringify(r.error.map(item => item.message))})
 		}
 
 		console.log("👍 Enviado a S4")
@@ -132,7 +134,6 @@ module.exports = async function (request) {
 				return acc;
 			}, {}))
 
-
 		// Envía los campos de encabezado y de línea a DOX usando la función post_ground_truth.
 		const { job_status, IDlist } = await cap_doxlib.post_ground_truth(latestHF, latestLI, doxID, auth_token);
 
@@ -146,7 +147,7 @@ module.exports = async function (request) {
 
 	} catch (error) {
 		// Maneja errores ocurridos durante el proceso de actualización y los envía en la respuesta.
-		console.error("Error al actualizar estados de enviado:")
+		console.log("Error al actualizar estados de enviado:")
 		request.error(error.message);
 	}
 }

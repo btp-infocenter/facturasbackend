@@ -40,6 +40,7 @@ async function post_factura(obj) {
             console.log('[10]', result.data[0].message, '[10]')
             return result.data[0].message
         } else {
+            console.log('[S4 error]', result.data)
             return { error: result.data }
         }
     } catch (error) {
