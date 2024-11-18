@@ -72,10 +72,12 @@ module.exports = async function (request) {
 
   // Enviar la imagen para procesar usando DOX
   let job_id = await cap_doxlib.post_job(img, options, auth_token);
-  // let job_id = '88fa45c8-62c3-4fd0-bf03-8c0e747fcacd'
+
+  // let job_id = '3582b35d-c2c2-40ba-9c61-3cf5c0182e41'
   // console.log('> > > > >')
   // console.log('> > ATENCION: JOB_ID COMO CONSTANTE < < < < ')
   // console.log('> > > > >')
+
   console.log(`DOX id >>> ${job_id} <<<`)
   // let job_id = '4e224d4e-b2b3-4348-a224-bb86f4dbd8ff'
 
@@ -95,7 +97,7 @@ module.exports = async function (request) {
         .filter(subItem => subItem.name === "importe") // Only "importe" items
         .reduce((total, subItem) => total + subItem.value, 0); // Sum the "importe" values
 
-        headerFields.find(item => item.name == "totalFactura").value = monto;
+      headerFields.find(item => item.name == "totalFactura").value = monto;
     }
 
     // Arrays para almacenar las entradas de las tablas
@@ -120,6 +122,7 @@ module.exports = async function (request) {
             ID: datoid,
             items_ID: itemid,
             name: field.name,
+            label: field.label,
             confidence: field.confidence,
             model: field.type,
             coordinates_x: field.coordinates.x,
@@ -149,6 +152,7 @@ module.exports = async function (request) {
           ID: datoid,
           fotos_ID: foto_ID,
           name: field.name,
+          label: field.label,
           confidence: field.confidence,
           model: field.type,
           coordinates_x: field.coordinates.x,
@@ -179,6 +183,10 @@ module.exports = async function (request) {
         doxID: job_id,
         status: dox_output.status
       });
+
+      const dox_status = dox_output.status
+
+    return { job_id, dox_status }
 
   } else {
     // Mostrar error si no se puede inicializar el procesamiento en DOX

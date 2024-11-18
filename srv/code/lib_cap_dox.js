@@ -85,10 +85,10 @@ async function set_groundtruth_body(headerFields, lineItems) {
       name: item.name,
       value: item._value,
       coordinates: {
-        x: item.coor_x,
-        y: item.coor_y,
-        w: item.coor_w,
-        h: item.coor_h
+        x: parseFloat(item.coor_x),
+        y: parseFloat(item.coor_y),
+        w: parseFloat(item.coor_w),
+        h: parseFloat(item.coor_h)
       }
     });
     return acc;
@@ -99,10 +99,10 @@ async function set_groundtruth_body(headerFields, lineItems) {
     name: item.name,
     value: item._value,
     coordinates: {
-      x: item.coor_x,
-      y: item.coor_y,
-      w: item.coor_w,
-      h: item.coor_h
+      x: parseFloat(item.coor_x),
+      y: parseFloat(item.coor_y),
+      w: parseFloat(item.coor_w),
+      h: parseFloat(item.coor_h)
     }
   }));
 

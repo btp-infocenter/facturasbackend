@@ -12,14 +12,26 @@
  */
 module.exports = async function (results, request) {
 	const { Values, Datos, Items, Fotos } = cds.entities('facturasbackendService'); // Accede a la entidad Fotos
-	const { datos_ID } = results; // Extrae el ID de las fotos del resultado del evento
+	const { ID } = results; // Extrae el ID de las fotos del resultado del evento
+
+	console.log('500')
+	console.log(results)
+	console.log('501')
+	console.log(request)
+	console.log('502')
 
 	try {
-		// Obtiene fotos_ID y items_ID basado en datos_ID
+		const value = await SELECT.one
+			.from(Values)
+			.where({ ID: ID })
+		console.log(ID)
+		console.log(value)
+
+		// Obtiene fotos_ID y items_ID basado en ID
 		const dato = await SELECT.one
 			.columns('fotos_ID', 'items_ID')
 			.from(Datos)
-			.where({ID: datos_ID })
+			.where({ ID: ID })
 
 		// Obtiene fotos_ID de Items si existe items_ID
 		const fotos_ID = dato.items_ID

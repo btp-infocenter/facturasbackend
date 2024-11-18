@@ -17,8 +17,6 @@ module.exports = async function (results, request) {
 	const foto_ID = request.params[0]; // Obtiene el ID de la foto a partir de los parámetros de la solicitud.
 	const { IDlist, s4doc } = results
 
-	// console.log(IDlist)
-
 	try {
 		// Actualiza el estado de la Foto a 'enviado'
 		await UPDATE.entity(Fotos)

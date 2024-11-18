@@ -21,7 +21,7 @@ module.exports = async function (request) {
 		// Selecciona los campos principales (headerFields) de la entidad Datos, asociando los valores y las coordenadas.
 		const headerFields = await SELECT
 			.from(Datos)
-			.where({ fotos_ID: foto_ID })
+			.where({ and: { fotos_ID: foto_ID, 'value.value': { '!=': null } } })
 			.columns(
 				'ID',
 				'name',
@@ -32,13 +32,7 @@ module.exports = async function (request) {
 				'coordinates_h as coor_h',
 				'coordinates_w as coor_w'
 			)
-			.orderBy({ 'value.createdAt': 'desc' }); // Ordena por la fecha de creación del valor, de manera descendente.
-
-		var hfValues = headerFields.filter(item => item._value != null)
-			.reduce((acc, item) => {
-				acc[item.name] = item._value;
-				return acc;
-			}, {});
+			.orderBy({ 'value.createdAt': 'asc' }) // Ordena por la fecha de creación del valor, de manera descendente.
 
 		// Selecciona los items correspondientes desde la entidad Datos, donde items_ID está en la subconsulta de Items.
 		const lineItems = await SELECT
@@ -62,10 +56,16 @@ module.exports = async function (request) {
 				}
 			})
 			.orderBy({
-				'value.createdAt': 'desc',
+				'value.createdAt': 'asc',
 			});
 
-		var liValues = lineItems.filter(item => item._value != null)
+		var valuesHF = headerFields.filter(item => item._value != null)
+			.reduce((acc, item) => {
+				acc[item.name] = item._value;
+				return acc;
+			}, {});
+
+		var valuesLI = lineItems.filter(item => item._value != null)
 			.sort((a, b) => a.items_ID.localeCompare(b.items_ID))
 			.reduce((acc, item) => {
 				const { items_ID, name, _value } = item;
@@ -83,34 +83,34 @@ module.exports = async function (request) {
 				return acc;
 			}, []);
 
-
-
 		const data = {
 			fechaFactura: "2024-11-12",
-			nroFactura: hfValues.nroFactura,
+			nroFactura: valuesHF.nroFactura,
 			creadoPor: "Bruno Bordon",
-			timbrado: hfValues.timbrado,
+			timbrado: valuesHF.timbrado,
 			ruc: "1548979-6",
-			nombre: hfValues.nombre,
-			direccion: hfValues.direccion,
-			ciudad: hfValues.ciudad,
-			telefono: hfValues.telefono,
+			nombre: valuesHF.nombre,
+			direccion: valuesHF.direccion,
+			ciudad: valuesHF.ciudad,
+			telefono: valuesHF.telefono,
 			nroRendicion: "123456",
 			concepto: "Prueba DOX + BAS",
-			condVenta: hfValues.condVenta,
-			totalFactura: hfValues.totalFactura,
-			totalIva5: hfValues.totalIva5,
-			totalIva10: hfValues.totalIva10,
+			condVenta: valuesHF.condVenta,
+			totalFactura: valuesHF.totalFactura,
+			totalIva5: valuesHF.totalIva5,
+			totalIva10: valuesHF.totalIva10,
 			moneda: 'PYG',
-			lineItems: liValues.map(item => item.values)
+			lineItems: valuesLI.map(item => item.values)
 		}
+
+		console.log('Enviando a S4 ...')
 
 		const r = await post_factura(data)
 
-		if (r.error) {
-			console.error("Error al crear registro en S4:")
-			request.error(r.error);
-			return
+		if (r.error != undefined) {
+			console.log("Error al crear registro en S4:")
+			request.error(JSON.stringify(r.error.map(item => item.message)));
+			return({error: JSON.stringify(r.error.map(item => item.message))})
 		}
 
 		console.log("👍 Enviado a S4")
@@ -122,8 +122,20 @@ module.exports = async function (request) {
 
 		const auth_token = await cap_doxlib.auth_token(); // Obtiene el token de autenticación para DOX.
 
+		const latestHF = Object.values(headerFields.filter(item => item._value != null)
+			.reduce((acc, item) => {
+				acc[item.name] = item;
+				return acc;
+			}, {}))
+
+		const latestLI = Object.values(lineItems.filter(item => item._value != null)
+			.reduce((acc, item) => {
+				acc[item.ID] = item;
+				return acc;
+			}, {}))
+
 		// Envía los campos de encabezado y de línea a DOX usando la función post_ground_truth.
-		const { job_status, IDlist } = await cap_doxlib.post_ground_truth(headerFields, lineItems, doxID, auth_token);
+		const { job_status, IDlist } = await cap_doxlib.post_ground_truth(latestHF, latestLI, doxID, auth_token);
 
 		// Verifica si la respuesta de la función post_ground_truth fue exitosa.
 		if (!job_status)
@@ -131,11 +143,11 @@ module.exports = async function (request) {
 		else if (job_status.status != 'DONE')
 			request.error(`Error DOX: ${res.message}`);
 
-		return { IDlist, s4doc}
+		return { IDlist, s4doc }
 
 	} catch (error) {
 		// Maneja errores ocurridos durante el proceso de actualización y los envía en la respuesta.
-		console.error("Error al actualizar estados de enviado:")
+		console.log("Error al actualizar estados de enviado:")
 		request.error(error.message);
 	}
 }

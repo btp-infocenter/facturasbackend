@@ -1,6 +1,7 @@
 const cds = require('@sap/cds');
 const supertest = require('supertest');
 const fs = require('fs');
+const { expect } = require('chai');
 let value, newvalue
 
 describe('Crear entradas', () => {
@@ -30,9 +31,9 @@ describe('Crear entradas', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(500);
-    expect(postResponse.body.error).toHaveProperty('message');
-    expect(postResponse.body.error.message).toMatch(/imagen/);
+    expect(postResponse.status).to.equal(500);
+    expect(postResponse.body.error).to.have.property('message');
+    expect(postResponse.body.error.message).to.match(/imagen/);
   });
 
   it('Intentar enviar', async () => {
@@ -41,9 +42,9 @@ describe('Crear entradas', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(500);
-    expect(postResponse.body.error).toHaveProperty('message');
-    expect(postResponse.body.error.message).toMatch(/procesada/);
+    expect(postResponse.status).to.equal(500);
+    expect(postResponse.body.error).to.have.property('message');
+    expect(postResponse.body.error.message).to.match(/procesada/);
   });
 
   afterAll(async () => {
@@ -67,8 +68,8 @@ describe('Subir imagen base64', () => {
     let getResponse = await request
       .get('/service/facturasbackendService/Fotos(e35b60f0-cdd7-42a9-812d-97cf4a1008c5)/imagen')
 
-    expect(getResponse.status).toBe(200);
-    expect(getResponse.body.value).toBeDefined();
+    expect(getResponse.status).to.equal(200);
+    expect(getResponse.body.value).to.not.be.undefined;
 
     img = getResponse.body.value
   })
@@ -81,7 +82,7 @@ describe('Subir imagen base64', () => {
       })
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(413);
+    expect(postResponse.status).to.equal(413);
   })
 
   it('Subir imagenes', async () => {
@@ -95,7 +96,7 @@ describe('Subir imagen base64', () => {
         })
         .set('Content-Type', 'application/json');
 
-      expect(postResponse.status).toBe(204);
+      expect(postResponse.status).to.equal(200);
     }
   })
 
@@ -104,8 +105,8 @@ describe('Subir imagen base64', () => {
     let postResponse = await request
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)')
 
-    expect(postResponse.status).toBe(200);
-    expect(postResponse.body.imagen).not.toBe(null)
+    expect(postResponse.status).to.equal(200);
+    expect(postResponse.body.imagen).not.to.equal(null)
   });
 
   afterAll(async () => {
@@ -120,9 +121,9 @@ describe('Subir imagen base64', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(500);
-    expect(postResponse.body.error).toHaveProperty('message');
-    expect(postResponse.body.error.message).toMatch(/procesada/);
+    expect(postResponse.status).to.equal(500);
+    expect(postResponse.body.error).to.have.property('message');
+    expect(postResponse.body.error.message).to.match(/procesada/);
   });
 
   it('Subir imagen (404)', async () => {
@@ -134,7 +135,7 @@ describe('Subir imagen base64', () => {
       })
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(404);
+    expect(postResponse.status).to.equal(404);
   });
 });
 
@@ -152,7 +153,7 @@ describe('Procesar en DOX', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(404);
+    expect(postResponse.status).to.equal(404);
   });
 
   it('DOX', async () => {
@@ -161,7 +162,7 @@ describe('Procesar en DOX', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(204);
+    expect(postResponse.status).to.equal(200);
   });
 
   it('Intentar DOX', async () => {
@@ -170,9 +171,9 @@ describe('Procesar en DOX', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).toBe(500);
-    expect(postResponse.body.error).toHaveProperty('message');
-    expect(postResponse.body.error.message).toMatch(/procesada/);
+    expect(postResponse.status).to.equal(500);
+    expect(postResponse.body.error).to.have.property('message');
+    expect(postResponse.body.error.message).to.match(/procesada/);
   });
 
   it('Metadata de Foto', async () => {
@@ -180,10 +181,10 @@ describe('Procesar en DOX', () => {
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)?$select=procesado,enviado,status,doxID')
       .expect(200)
 
-    expect(getResponse.body.procesado).toBe(true);
-    expect(getResponse.body.enviado).toBe(false);
-    expect(getResponse.body.status).toBe('DONE');
-    expect(getResponse.body).toHaveProperty('doxID');
+    expect(getResponse.body.procesado).to.equal(true);
+    expect(getResponse.body.enviado).to.equal(false);
+    expect(getResponse.body.status).to.equal('DONE');
+    expect(getResponse.body).to.have.property('doxID');
   });
 
   afterAll(async () => {
@@ -207,30 +208,33 @@ describe('Manipular Datos', () => {
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosItems')
       .expect(200)
 
-    expect(Array.isArray(getResponse.body.value)).toBe(true)
+    expect(Array.isArray(getResponse.body.value)).to.equal(true)
   });
 
   it('verificar datos', async () => {
     const getResponse1 = await request
-      .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosHeader')
+      .get("/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/datosHeader?$filter=name eq 'nombre'")
       .expect(200)
 
-    expect(getResponse1.body).toHaveProperty('value')
-    expect(Array.isArray(getResponse1.body.value)).toBe(true)
-    dato = getResponse1.body.value[0].ID
+    expect(getResponse1.body).to.have.property('value')
+    expect(Array.isArray(getResponse1.body.value)).to.equal(true)
 
+    dato = getResponse1.body.value[0].ID
+  });
+
+  it('verificar item', async () => {
     const getResponse2 = await request
       .get(`/service/facturasbackendService/Datos/${dato}/value`)
       .expect(200)
 
-    expect(getResponse2.body).toHaveProperty('value')
-    expect(Array.isArray(getResponse2.body.value)).toBe(true)
+    expect(getResponse2.body).to.have.property('value')
+    expect(Array.isArray(getResponse2.body.value)).to.equal(true)
     value = getResponse2.body.value[0].ID
 
-    expect(getResponse2.body.value[0]).toHaveProperty('autoCreado')
-    expect(getResponse2.body.value[0].autoCreado).toBe(true)
-    expect(getResponse2.body.value[0].enviado).toBe(false)
-    expect(getResponse2.body.value[0].value).not.toBe(null)
+    expect(getResponse2.body.value[0]).to.have.property('autoCreado')
+    expect(getResponse2.body.value[0].autoCreado).to.equal(true)
+    expect(getResponse2.body.value[0].enviado).to.equal(false)
+    expect(getResponse2.body.value[0].value).not.to.equal(null)
   });
 
   it('Intentar modificar y eliminar', async () => {
@@ -238,7 +242,7 @@ describe('Manipular Datos', () => {
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
 
-    expect(getResponse1.body.value).not.toBe("modifyvalue");
+    expect(getResponse1.body.value).not.to.equal("modifyvalue");
 
     const patchResponse = await request
       .patch(`/service/facturasbackendService/Values(${value})`)
@@ -246,29 +250,29 @@ describe('Manipular Datos', () => {
       .set('Content-Type', 'application/json')
       .expect(500)
 
-    expect(patchResponse.status).toBe(500);
-    expect(patchResponse.body.error).toHaveProperty('message');
-    expect(patchResponse.body.error.message).toMatch(/automáticamente/);
+    expect(patchResponse.status).to.equal(500);
+    expect(patchResponse.body.error).to.have.property('message');
+    expect(patchResponse.body.error.message).to.match(/automáticamente/);
 
     const getResponse2 = await request
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
 
-    expect(getResponse2.body.value).not.toBe("modifyvalue");
+    expect(getResponse2.body.value).not.to.equal("modifyvalue");
 
     const posthResponse = await request
       .delete(`/service/facturasbackendService/Values(${value})`)
       .expect(500)
 
-    expect(posthResponse.status).toBe(500);
-    expect(posthResponse.body.error).toHaveProperty('message');
-    expect(posthResponse.body.error.message).toMatch(/automáticamente/);
+    expect(posthResponse.status).to.equal(500);
+    expect(posthResponse.body.error).to.have.property('message');
+    expect(posthResponse.body.error.message).to.match(/automáticamente/);
 
     const getResponse3 = await request
       .get(`/service/facturasbackendService/Values(${value})`)
       .expect(200)
 
-    expect(getResponse3.body.value).not.toBe("modifyvalue");
+    expect(getResponse3.body.value).not.to.equal("modifyvalue");
   });
 
   it('Agregar Value', async () => {
@@ -281,11 +285,11 @@ describe('Manipular Datos', () => {
       .set('Content-Type', 'application/json')
       .expect(201)
 
-    expect(postResponse.body).toHaveProperty('value')
-    expect(postResponse.body.datos_ID).not.toBe(null)
-    expect(postResponse.body.autoCreado).toBe(false)
-    expect(postResponse.body.enviado).toBe(false)
-    expect(postResponse.body.value).not.toBe(null)
+    expect(postResponse.body).to.have.property('value')
+    expect(postResponse.body.datos_ID).not.to.equal(null)
+    expect(postResponse.body.autoCreado).to.equal(false)
+    expect(postResponse.body.enviado).to.equal(false)
+    expect(postResponse.body.value).not.to.equal(null)
   });
 
   it('Verificar Value', async () => {
@@ -293,10 +297,10 @@ describe('Manipular Datos', () => {
       .get(`/service/facturasbackendService/Datos(${dato})/value?$orderby=createdAt desc`)
       .expect(200)
 
-    expect(getResponse.body).toHaveProperty('value')
-    expect(Array.isArray(getResponse.body.value)).toBe(true)
-    expect(getResponse.body.value[0].value).toBe('newvalue')
-    expect(getResponse.body.value[1].value).not.toBe('newvalue')
+    expect(getResponse.body).to.have.property('value')
+    expect(Array.isArray(getResponse.body.value)).to.equal(true)
+    expect(getResponse.body.value[0].value).to.equal('newvalue')
+    expect(getResponse.body.value[1].value).not.to.equal('newvalue')
 
     newvalue = getResponse.body.value[0].ID
   });
@@ -312,9 +316,9 @@ describe('Manipular Datos', () => {
       .get(`/service/facturasbackendService/Values(${newvalue})`)
       .expect(200)
 
-    expect(getResponse.body.value).toBe('modifyvalue');
-    expect(getResponse.body.value).not.toBe('newvalue');
-    expect(getResponse.body.autoCreado).toBe(false);
+    expect(getResponse.body.value).to.equal('modifyvalue');
+    expect(getResponse.body.value).not.to.equal('newvalue');
+    expect(getResponse.body.autoCreado).to.equal(false);
   });
 
   afterAll(async () => {
@@ -345,7 +349,7 @@ describe('Mandar a S4', () => {
       .post('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/facturasbackendService.enviar')
       .send()
       .set('Content-Type', 'application/json')
-      .expect(204);
+      .expect(200);
   });
 
 
@@ -354,7 +358,7 @@ describe('Mandar a S4', () => {
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/enviado')
       .expect(200);
 
-    expect(getFoto.body.value).toBe(true);
+    expect(getFoto.body.value).to.equal(true);
 
     const getOldValue = await request
       .get(`/service/facturasbackendService/Values(${value})/enviado`)
@@ -365,8 +369,8 @@ describe('Mandar a S4', () => {
       .get(`/service/facturasbackendService/Values(${newvalue})/enviado`)
       .expect(200);
 
-    expect(getOldValue.body.value).toBe(false);
-    expect(getNewValue.body.value).toBe(true);
+    expect(getOldValue.body.value).to.equal(false);
+    expect(getNewValue.body.value).to.equal(true);
   });
 
   it('check s4doc', async () => {
@@ -374,7 +378,7 @@ describe('Mandar a S4', () => {
       .get('/service/facturasbackendService/Fotos(99999999-0000-1111-2222-aaaabbbbcccc)/s4doc')
       .expect(200);
 
-    expect(getFoto.body.value).not.toBe(null);
+    expect(getFoto.body.value).not.to.equal(null);
   });
 
   afterAll(async () => {
