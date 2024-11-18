@@ -16,11 +16,13 @@ service uploadPhoto
             action upload
             (
                 imagen : LargeString
-            );
+            )
+            returns String;
 
             action dox
             (
-            );
+            )
+            returns String;
         };
 }
 

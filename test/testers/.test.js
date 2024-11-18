@@ -96,7 +96,7 @@ describe('Subir imagen base64', () => {
         })
         .set('Content-Type', 'application/json');
 
-      expect(postResponse.status).to.equal(204);
+      expect(postResponse.status).to.equal(200);
     }
   })
 
@@ -162,7 +162,7 @@ describe('Procesar en DOX', () => {
       .send()
       .set('Content-Type', 'application/json');
 
-    expect(postResponse.status).to.equal(204);
+    expect(postResponse.status).to.equal(200);
   });
 
   it('Intentar DOX', async () => {

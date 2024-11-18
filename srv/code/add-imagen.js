@@ -13,6 +13,7 @@ module.exports = async function(request) {
 	const newImagen = request.req.body.imagen; // Captura la nueva imagen del cuerpo de la solicitud
 	const fotos_ID = request.params[0]; // Obtiene el ID de la foto desde los parámetros de la solicitud
 
+	try {
 	// Guardar imagen ya existente
 	const oldFoto = await SELECT.one
 		.columns('imagen')
@@ -32,4 +33,10 @@ module.exports = async function(request) {
 		}).then(
 			console.log("👍 photo-uploaded") // Mensaje de éxito al subir la foto
 		);
+
+		return "sucess";
+
+	} catch (error) {
+		request.error(error)
+	}
 }

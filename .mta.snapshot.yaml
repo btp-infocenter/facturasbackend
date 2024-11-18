@@ -88,26 +88,26 @@ modules:
               TokenServiceKeyName: facturasbackend-uaa-key
               URL: ~{srv-api/srv-url}/service/facturasbackendService
               sap.cloud.service: lcap.facturasbackend
-              sap.applicationdevelopment.actions.enabled: true
+              sap.applicationdevelopment.actions.enabled: false
               sap.build.usage: CAP
-              sap.processautomation.enabled: true
-              HTML5.DynamicDestination: true
-              WebIDEEnabled: true
-              MobileEnabled: true
-              AppgyverEnabled: true
+              sap.processautomation.enabled: false
+              HTML5.DynamicDestination: false
+              WebIDEEnabled: false
+              MobileEnabled: false
+              AppgyverEnabled: false
             - Authentication: OAuth2UserTokenExchange
               Name: facturasbackend-uploadPhoto
               TokenServiceInstanceName: facturasbackend-uaa
               TokenServiceKeyName: facturasbackend-uaa-key
               URL: ~{srv-api/srv-url}/service/uploadPhoto
               sap.cloud.service: lcap.facturasbackend
-              sap.applicationdevelopment.actions.enabled: true
+              sap.applicationdevelopment.actions.enabled: false
               sap.build.usage: CAP
-              sap.processautomation.enabled: true
-              HTML5.DynamicDestination: true
-              WebIDEEnabled: true
-              MobileEnabled: true
-              AppgyverEnabled: true
+              sap.processautomation.enabled: false
+              HTML5.DynamicDestination: false
+              WebIDEEnabled: false
+              MobileEnabled: false
+              AppgyverEnabled: false
     build-parameters:
       no-source: true
     requires:

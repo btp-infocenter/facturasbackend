@@ -97,7 +97,7 @@ module.exports = async function (request) {
         .filter(subItem => subItem.name === "importe") // Only "importe" items
         .reduce((total, subItem) => total + subItem.value, 0); // Sum the "importe" values
 
-        headerFields.find(item => item.name == "totalFactura").value = monto;
+      headerFields.find(item => item.name == "totalFactura").value = monto;
     }
 
     // Arrays para almacenar las entradas de las tablas
@@ -183,6 +183,10 @@ module.exports = async function (request) {
         doxID: job_id,
         status: dox_output.status
       });
+
+      const dox_status = dox_output.status
+
+    return { job_id, dox_status }
 
   } else {
     // Mostrar error si no se puede inicializar el procesamiento en DOX
