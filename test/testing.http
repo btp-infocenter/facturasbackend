@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:4004
+
+@imgID = 159c8e42-d708-4a0a-b95e-f26f4466308c
+
+###
+GET {{baseUrl}}/service/Fotos
+
+###
+GET {{baseUrl}}/service/Fotos({{imgID}})
+
+###
+GET {{baseUrl}}/service/Fotos({{imgID}})/service.dox
+
+###
+PATCH {{baseUrl}}/service/Fotos({{imgID}})
+Content-Type: application/json
+
+{
+    "imagen": "imagen123"  
+}
+
+###
+GET {{baseUrl}}/service/Fotos({{imgID}})/service.upload(imagen='imagen123')
+
+###
+GET {{baseUrl}}/service/Fotos({{imgID}})/service.datos
+
+###
+GET {{baseUrl}}/service/Fotos({{imgID}})/service.enviar
