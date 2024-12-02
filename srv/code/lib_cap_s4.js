@@ -50,10 +50,7 @@ async function post_factura(obj) {
 
 }
 
-async function testing() {
-    let obj = {
-        CompanyCode: "1000"
-    }
+async function post_orden(obj) {
     try {
         const result = await executeHttpRequest(
             { destinationName: "INFOCENTER_160" },
@@ -67,22 +64,54 @@ async function testing() {
             }
         );
 
-        console.log('STATUS:', result.status)
-        console.log(result.data)
-        console.log('</end>')
+        return result.data.d.PurchaseOrder
 
-    } catch (error) {
-        console.error(error.response.data)
+    } catch (err) {
+        let error = err.response.data?.error?.innererror?.errordetails
+
+        if (error == undefined)
+            error = err.response.data
+        console.error(error)
         console.log("FIN DEL ERROR")
+        return ({ error })
     }
+}
 
+async function post_material(obj) {
+    try {
+        const result = await executeHttpRequest(
+            { destinationName: "INFOCENTER_160" },
+            {
+                method: "post",
+                url: "/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV/A_MaterialDocumentHeader",
+                headers: {
+                    'Accept': 'application/json'
+                },
+                data: obj,
+            }
+        );
+
+        return result.data.d.MaterialDocument
+
+    } catch (err) {
+        let error = err.response.data?.error?.innererror?.errordetails
+
+        if (error == undefined)
+            error = err.response.data
+        console.error(error)
+        console.log("FIN DEL ERROR")
+        return ({ error })
+    }
 }
 
 module.exports = {
     post_factura: async function (obj) {
         return await post_factura(obj);
     },
-    testing: async function () {
-        return await testing();
+    post_orden: async function (obj) {
+        return await post_orden(obj);
+    },
+    post_material: async function (obj) {
+        return await post_material(obj);
     }
 }

@@ -12,7 +12,9 @@ entity Fotos : cuid, managed
     imagen : LargeString;
     mimetype : String(5);
     doxID : String(50);
-    s4ID : String(50);
+    s4OrdenID : String(50);
+    s4MaterialID : String(50);
+    s4FacturaID : String(50);
 }
 
 type dato

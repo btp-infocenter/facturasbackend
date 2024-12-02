@@ -26,4 +26,4 @@ GET {{baseUrl}}/service/Fotos({{imgID}})/service.upload(imagen='imagen123')
 GET {{baseUrl}}/service/Fotos({{imgID}})/service.datos
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})/service.enviar
+GET {{baseUrl}}/service/Fotos({{imgID}})/service.enviar 
