@@ -25,27 +25,29 @@ if (typeof process.env.cap_s4_key_uaa === "undefined") {
 async function post_factura(obj) {
     try {
         const result = await executeHttpRequest(
-            { destinationName: "INFOCENTER_160" },
+            { destinationName: "INFOCENTER_160"},
             {
                 method: "post",
-                url: '/sap/bc/rest/dox/factura',
+                url: "/sap/opu/odata/sap/API_SUPPLIERINVOICE_PROCESS_SRV/A_SupplierInvoice",
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'sap-language': 'ES'
                 },
                 data: obj,
             }
         );
 
-        if (result.data[0].type == 'S') {
-            console.log('[10]', result.data[0].message, '[10]')
-            return result.data[0].message
-        } else {
-            console.log('[S4 error]', result.data)
-            return { error: result.data }
-        }
-    } catch (error) {
-        console.error("Error at [post_facturas]:", error)
-        return { error: error.data }
+        return result.data.d.SupplierInvoice
+
+    } catch (err) {
+        let error = err.response.data?.error
+
+        if (error == undefined)
+            error = err
+        console.error(error)
+        console.log("FIN DEL ERROR")
+
+        return ({ error })
     }
 
 }
@@ -53,12 +55,13 @@ async function post_factura(obj) {
 async function post_orden(obj) {
     try {
         const result = await executeHttpRequest(
-            { destinationName: "INFOCENTER_160" },
+            { destinationName: "INFOCENTER_160"},
             {
                 method: "post",
                 url: "/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV/A_PurchaseOrder",
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'sap-language': 'ES'
                 },
                 data: obj,
             }
@@ -67,10 +70,11 @@ async function post_orden(obj) {
         return result.data.d.PurchaseOrder
 
     } catch (err) {
-        let error = err.response.data?.error?.innererror?.errordetails
+        let error = err.response.data?.error
 
         if (error == undefined)
-            error = err.response.data
+            error = err
+
         console.error(error)
         console.log("FIN DEL ERROR")
         return ({ error })
@@ -80,7 +84,9 @@ async function post_orden(obj) {
 async function post_material(obj) {
     try {
         const result = await executeHttpRequest(
-            { destinationName: "INFOCENTER_160" },
+            {
+                destinationName: "INFOCENTER_160"
+            },
             {
                 method: "post",
                 url: "/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV/A_MaterialDocumentHeader",
@@ -94,15 +100,52 @@ async function post_material(obj) {
         return result.data.d.MaterialDocument
 
     } catch (err) {
+        console.log('[MATERIAL ERROR]')
+
         let error = err.response.data?.error?.innererror?.errordetails
 
         if (error == undefined)
-            error = err.response.data
+            error = err
         console.error(error)
         console.log("FIN DEL ERROR")
         return ({ error })
     }
 }
+async function get_supplier(ruc) {
+    ruc = ruc.toString();
+    ruc = ruc[ruc.length - 2] !== '-' ? ruc.slice(0, -1) + '-' + ruc.slice(-1) : ruc
+
+    try {
+        const result = await executeHttpRequest(
+            {
+                destinationName: "INFOCENTER_160"
+            },
+            {
+                method: "get",
+                url: `/sap/opu/odata/sap/API_BUSINESS_PARTNER/A_Supplier?$format=json&sap-client=160&$filter=TaxNumber1 eq'${ruc}'`,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }
+        );
+
+        const Supplier = result.data.d.results[0].Supplier
+
+        return Supplier
+
+    } catch (err) {
+        console.log('[MATERIAL ERROR]')
+
+        let error = err.response.data?.error?.innererror?.errordetails
+
+        if (error == undefined)
+            error = err
+        console.error(error)
+        console.log("FIN DEL ERROR")
+        return ({ error })
+    }
+}
+
 
 module.exports = {
     post_factura: async function (obj) {
@@ -113,5 +156,8 @@ module.exports = {
     },
     post_material: async function (obj) {
         return await post_material(obj);
+    },
+    get_supplier: async function (ruc) {
+        return await get_supplier(ruc)
     }
 }

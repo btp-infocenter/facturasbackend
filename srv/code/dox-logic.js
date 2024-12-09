@@ -45,11 +45,14 @@ module.exports = async function (request) {
 		return
 	}
 
+	const modifiedAt = new Date()
+
 	await UPDATE.entity(Fotos)
 		.data({
-			doxID: job_id
+			doxID: job_id,
+			modifiedAt
 		})
 		.where({ ID: foto_ID })
 
-	return job_id;
+	return { job_id, modifiedAt };
 }

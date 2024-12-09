@@ -7,6 +7,7 @@ const dox_Logic = require('./code/dox-logic');
 const upload_Logic = require('./code/upload-logic');
 const datos_Logic = require('./code/datos-logic');
 const enviar_Logic = require('./code/enviar-logic');
+const update_Datos_Logic = require('./code/update-datos-logic');
 
 class service extends LCAPApplicationService {
     async init() {
@@ -25,6 +26,10 @@ class service extends LCAPApplicationService {
 
         this.on('enviar', 'Fotos', async (request, next) => {
             return enviar_Logic(request);
+        });
+
+        this.on('update_datos', 'Fotos', async (request, next) => {
+            return update_Datos_Logic(request);
         });
 
         return super.init();

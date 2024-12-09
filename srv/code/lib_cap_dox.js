@@ -41,51 +41,21 @@ async function set_job_body(imagen, options, auth_token,) {
  * @returns {string} - Cuerpo preparado para el envío de ground truth.
  */
 async function set_groundtruth_body(headerFields, lineItems) {
-  // Filtra headerFields eliminando duplicados por el campo ID.
-  headerFields = headerFields.reduce((acc, item) => {
-    if (!acc.seen.has(item.ID)) {
-      acc.seen.add(item.ID);  // Agrega el ID al set para rastrear duplicados.
-      acc.result.push(item);  // Si no se ha visto antes, se agrega al resultado.
-    }
-    return acc;
-  }, { seen: new Set(), result: [] }).result;
-
-  // Filtra lineItems eliminando duplicados por el campo ID.
-  lineItems = lineItems.reduce((acc, item) => {
-    if (!acc.seen.has(item.ID)) {
-      acc.seen.add(item.ID);
-      acc.result.push(item);
-    }
-    return acc;
-  }, { seen: new Set(), result: [] }).result;
-
-  let lineItems_obj = lineItems.reduce((acc, item) => {
-    (acc[item.items_ID] ||= []).push({
-      name: item.name,
-      value: item._value,
-      coordinates: {
-        x: parseFloat(item.coor_x),
-        y: parseFloat(item.coor_y),
-        w: parseFloat(item.coor_w),
-        h: parseFloat(item.coor_h)
-      }
-    });
-    return acc;
-  }, {});
-
-  // Mapear los headerFields para crear un objeto con los campos y sus coordenadas.
-  const headerFieldsObj = headerFields.map(item => ({
-    name: item.name,
-    value: item._value,
-    coordinates: {
-      x: parseFloat(item.coor_x),
-      y: parseFloat(item.coor_y),
-      w: parseFloat(item.coor_w),
-      h: parseFloat(item.coor_h)
-    }
+  const headerFieldsObj = headerFields.map(({ name, value }) => ({
+    name,
+    value
   }));
 
-  const lineItemsObj = Object.values(lineItems_obj);
+  const lineItemsObj = []
+
+  for (let item of lineItems) {
+    let { orden, name, value } = item
+
+    if (!lineItemsObj[orden])
+      lineItemsObj[orden] = []
+
+    lineItemsObj[orden].push({ name, value })
+  }
 
   // Crea el payload que será enviado con headerFields y lineItems.
   const payload = {
@@ -97,9 +67,7 @@ async function set_groundtruth_body(headerFields, lineItems) {
     }
   };
 
-  const IDlist = headerFields.map(item => (item.value_ID)).concat(lineItems.map(item => (item.value_ID)))
-
-  return { ground_truth: JSON.stringify(payload), IDlist: IDlist }; // Devuelve el payload en formato JSON.
+  return { ground_truth: JSON.stringify(payload) }; // Devuelve el payload en formato JSON.
 }
 
 /**
@@ -244,7 +212,7 @@ async function post_job(imagen, options, auth_token) {
  * @returns {Object} - Resultado del envío de ground truth.
  */
 async function post_ground_truth(headerFields, lineItems, id, auth_token) {
-  var { ground_truth, IDlist } = await set_groundtruth_body(headerFields, lineItems); // Prepara el cuerpo con el ground truth
+  var { ground_truth } = await set_groundtruth_body(headerFields, lineItems); // Prepara el cuerpo con el ground truth
 
   let config = {
     method: 'post',
@@ -267,7 +235,9 @@ async function post_ground_truth(headerFields, lineItems, id, auth_token) {
       console.log(error.response.data.error); // [Advertencia] Manejo de errores al enviar ground truth
     });
 
-  return { job_status, IDlist }; // Retorna el estado del trabajo o vacío si falla
+  console.log('👍 Post Ground Truth')
+
+  return { job_status }; // Retorna el estado del trabajo o vacío si falla
 }
 
 /**
@@ -278,42 +248,49 @@ async function post_ground_truth(headerFields, lineItems, id, auth_token) {
  */
 async function get_job(job_id, auth_token) {
   console.log("Waiting for result ...");
-  let config = {
-    method: 'get',
-    maxBodyLength: Infinity,
-    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id + '',
-    headers: { 'Authorization': auth_token }
-  };
 
-  let job_details;
+  try {
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id + '?returnNullValues=true',
+      headers: { 'Authorization': auth_token }
+    };
 
-  // Realiza consultas repetidas hasta que el trabajo ya no esté en estado "PENDING".
-  do {
-    job_details = await axios.request(config)
+    let job_details;
+
+    // Realiza consultas repetidas hasta que el trabajo ya no esté en estado "PENDING".
+    do {
+      job_details = await axios.request(config)
+        .then((response) => {
+          return response.data; // Retorna los detalles del trabajo
+        })
+        .catch((error) => {
+          log(error); // [Advertencia] Manejo de errores en la consulta del estado del trabajo
+        });
+    } while (job_details.status === 'PENDING'); // Se detiene cuando el estado ya no es "PENDING"
+
+    config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id + '?extractedValues=true',
+      headers: { 'Authorization': auth_token }
+    };
+
+    let job_details2 = await axios.request(config)
       .then((response) => {
         return response.data; // Retorna los detalles del trabajo
       })
       .catch((error) => {
         log(error); // [Advertencia] Manejo de errores en la consulta del estado del trabajo
       });
-  } while (job_details.status === 'PENDING'); // Se detiene cuando el estado ya no es "PENDING"
 
-  config = {
-    method: 'get',
-    maxBodyLength: Infinity,
-    url: cap_dox_key.endpoints.backend.url + cap_dox_key.swagger + 'document/jobs/' + job_id + '?returnNullValues=true&extractedValues=true',
-    headers: { 'Authorization': auth_token }
-  };
+    return { GT: job_details, AI: job_details2 }; // Retorna los detalles del trabajo cuando esté completo
 
-  let job_details2 = await axios.request(config)
-    .then((response) => {
-      return response.data; // Retorna los detalles del trabajo
-    })
-    .catch((error) => {
-      log(error); // [Advertencia] Manejo de errores en la consulta del estado del trabajo
-    });
-
-  return { GT: job_details, AI: job_details2 }; // Retorna los detalles del trabajo cuando esté completo
+  } catch (error) {
+    console.error(error)
+    return ({ error })
+  }
 }
 
 /**

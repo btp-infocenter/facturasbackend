@@ -1,12 +1,12 @@
 @baseUrl = http://localhost:4004
 
-@imgID = 159c8e42-d708-4a0a-b95e-f26f4466308c
+@imgID = 4610e938-0079-41e0-8b98-d8eccbaf7369
 
 ###
 GET {{baseUrl}}/service/Fotos
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})
+GET {{baseUrl}}/service/Fotos({{imgID}})?$select=modifiedAt
 
 ###
 GET {{baseUrl}}/service/Fotos({{imgID}})/service.dox
@@ -27,3 +27,45 @@ GET {{baseUrl}}/service/Fotos({{imgID}})/service.datos
 
 ###
 GET {{baseUrl}}/service/Fotos({{imgID}})/service.enviar 
+
+###
+POST {{baseUrl}}/service/Fotos({{imgID}})/service.update_datos 
+Content-Type: application/json
+
+{
+    "headerFields": [
+        "{ \"name\": \"cdc\", \"value\": \"undefined\" }",
+        "{ \"name\": \"ruc\", \"value\": \"2139297-8\" }",
+        "{ \"name\": \"ciudad\", \"value\": \"DE OTROS\" }",
+        "{ \"name\": \"moneda\", \"value\": \"PYG\" }",
+        "{ \"name\": \"nombre\", \"value\": \"DE EMISIÓN:\" }",
+        "{ \"name\": \"codigoQR\", \"value\": \"undefined\" }",
+        "{ \"name\": \"telefono\", \"value\": \"TRANSPORTE TERRESTRE DE MENSAIERÍA\" }",
+        "{ \"name\": \"timbrado\", \"value\": \"undefined\" }",
+        "{ \"name\": \"condVenta\", \"value\": \"CONTADO:\" }",
+        "{ \"name\": \"direccion\", \"value\": \"SERVIOIOS SERVICIOS DE COMIDA N.C.P.\" }",
+        "{ \"name\": \"totalIva5\", \"value\": \"undefined\" }",
+        "{ \"name\": \"nroFactura\", \"value\": \"001-001-0004624\" }",
+        "{ \"name\": \"rucCliente\", \"value\": \"Asunción 27-09-2024\" }",
+        "{ \"name\": \"totalIva10\", \"value\": \"3636\" }",
+        "{ \"name\": \"fechaFactura\", \"value\": \"2024-09-27\" }",
+        "{ \"name\": \"totalFactura\", \"value\": \"80.00\" }"
+    ],
+    "lineItems": [
+        "{ \"name\": \"codigo\", \"value\": \"undefined\", \"orden\": 0 }",
+        "{ \"name\": \"importe\", \"value\": \"40.00\", \"orden\": 0 }",
+        "{ \"name\": \"cantidad\", \"value\": \"1\", \"orden\": 0 }",
+        "{ \"name\": \"descripcion\", \"value\": \"Estacionamien to\", \"orden\": 0 }",
+        "{ \"name\": \"material\", \"value\": \"SR.0004: SERVICIO DE LIMPIEZA\", \"orden\": 0 }",
+        "{ \"name\": \"indImpuesto\", \"value\": \"10%\", \"orden\": 0 }",
+        "{ \"name\": \"precioUnitario\", \"value\": \"undefined\", \"orden\": 0 }",
+
+        "{ \"name\": \"codigo\", \"value\": \"undefined\", \"orden\": 1 }",
+        "{ \"name\": \"importe\", \"value\": \"40.00\", \"orden\": 1 }",
+        "{ \"name\": \"cantidad\", \"value\": \"1\", \"orden\": 1 }",
+        "{ \"name\": \"descripcion\", \"value\": \"Estacionamien to\", \"orden\": 1 }",
+        "{ \"name\": \"material\", \"value\": \"SR.0004: SERVICIO DE LIMPIEZA\", \"orden\": 1 }",
+        "{ \"name\": \"indImpuesto\", \"value\": \"10%\", \"orden\": 1 }",
+        "{ \"name\": \"precioUnitario\", \"value\": \"undefined\", \"orden\": 1 }"
+    ]
+}

@@ -80,5 +80,9 @@
         }
       }
     }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "lcap.facturasminibackend"
   }
 }

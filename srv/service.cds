@@ -27,6 +27,13 @@ service service
             (
             )
             returns String;
+
+            action update_datos
+            (
+                headerFields : many String(100),
+                lineItems : many String(100)
+            )
+            returns String;
         };
 }
 
