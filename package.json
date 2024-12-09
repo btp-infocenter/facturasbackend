@@ -7,6 +7,8 @@
     "private": true,
     "dependencies": {
         "@cap-js/hana": "^1",
+        "@google-cloud/documentai": "^8.12.0",
+        "@google-cloud/storage": "^7.14.0",
         "@sap-cloud-sdk/http-client": "^3.23.0",
         "@sap-cloud-sdk/test-util": "^3.24.0",
         "@sap-cloud-sdk/util": "^3.23.0",

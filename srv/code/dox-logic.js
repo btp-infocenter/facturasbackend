@@ -5,6 +5,7 @@
 */
 
 const { post_job, auth_token } = require('./lib_cap_dox')
+const { quickstart } = require('./documentai')
 
 module.exports = async function (request) {
 	const { Fotos } = cds.entities('facturasminibackend');
@@ -28,31 +29,5 @@ module.exports = async function (request) {
 		`${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })} [test]` :
 		`${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })}`
 
-	const token = await auth_token();
-
-	const img = {
-		base64: imagen,
-		title: title,
-		mimetype: mimetype
-	}
-
-	let job_id = await post_job(img, options, token);
-
-	console.log(`DOX id >>> ${job_id} <<<`);
-
-	if (job_id.error) {
-		request.error(job_id.error)
-		return
-	}
-
-	const modifiedAt = new Date()
-
-	await UPDATE.entity(Fotos)
-		.data({
-			doxID: job_id,
-			modifiedAt
-		})
-		.where({ ID: foto_ID })
-
-	return { job_id, modifiedAt };
+	await quickstart(imagen, mimetype)
 }
