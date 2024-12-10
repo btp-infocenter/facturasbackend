@@ -27,7 +27,7 @@
                     return Controller.extend("PreviewController", {
                         onInit: function () {
 
-                            const data = {"Services":[{"ServiceName":"service","DetailsURL":"./service/","Metadata":"./service/$metadata","Entities":[{"Name":"Fotos","URL":"./service/Fotos","FioriURL":""}],"EntitiesCount":1}]}
+                            const data = {"Services":[{"ServiceName":"service","DetailsURL":"./service/","Metadata":"./service/$metadata","Entities":[{"Name":"Photos","URL":"./service/Photos","FioriURL":""}],"EntitiesCount":1}]}
                             this.getView().setModel(new JSONModel(data));
                         }
                     });

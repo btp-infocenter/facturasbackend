@@ -3,8 +3,8 @@ using { facturasminibackend as my } from '../db/schema.cds';
 @path : '/service'
 service service
 {
-    entity Fotos as
-        projection on my.Fotos
+    entity Photos as
+        projection on my.Photos
         actions
         {
             function dox
@@ -35,6 +35,8 @@ service service
             )
             returns String;
         };
+
+    entity Datos as projection on my.Datos;
 }
 
 annotate service with @requires :

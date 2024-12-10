@@ -1,6 +1,6 @@
 /**
  * 
- * @On(event = { "enviar" }, entity = "service.Fotos")
+ * @On(event = { "enviar" }, entity = "service.Photos")
  * @param {Object} request - User information, tenant-specific CDS model, headers and query parameters
 */
 
@@ -9,7 +9,7 @@ const { post_orden, post_factura } = require('./lib_cap_s4');
 const { parse2s4 } = require('./parser');
 
 module.exports = async function (request) {
-	const { Fotos } = cds.entities('facturasminibackend');
+	const { Photos } = cds.entities('facturasminibackend');
 	const foto_ID = request.params[0];
 
 	const datos = await parse2s4(foto_ID)
@@ -53,7 +53,7 @@ module.exports = async function (request) {
 		return
 	}
 
-	await UPDATE.entity(Fotos)
+	await UPDATE.entity(Photos)
 		.data({
 			s4OrdenID: purchaseOrder
 		})
@@ -110,7 +110,7 @@ module.exports = async function (request) {
 
 	const modifiedAt = new Date()
 
-	await UPDATE.entity(Fotos)
+	await UPDATE.entity(Photos)
 		.data({
 			s4FacturaID: supplierinvoice,
 			modifiedAt

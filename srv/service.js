@@ -12,23 +12,23 @@ const update_Datos_Logic = require('./code/update-datos-logic');
 class service extends LCAPApplicationService {
     async init() {
 
-        this.on('dox', 'Fotos', async (request, next) => {
+        this.on('dox', 'Photos', async (request, next) => {
             return dox_Logic(request);
         });
 
-        this.on('upload', 'Fotos', async (request, next) => {
+        this.on('upload', 'Photos', async (request, next) => {
             return upload_Logic(request);
         });
 
-        this.on('datos', 'Fotos', async (request, next) => {
+        this.on('datos', 'Photos', async (request, next) => {
             return datos_Logic(request);
         });
 
-        this.on('enviar', 'Fotos', async (request, next) => {
+        this.on('enviar', 'Photos', async (request, next) => {
             return enviar_Logic(request);
         });
 
-        this.on('update_datos', 'Fotos', async (request, next) => {
+        this.on('update_datos', 'Photos', async (request, next) => {
             return update_Datos_Logic(request);
         });
 

@@ -1,24 +1,37 @@
 namespace facturasminibackend;
 
-using
-{
+using {
     cuid,
     managed
-}
-from '@sap/cds/common';
+} from '@sap/cds/common';
 
-entity Fotos : cuid, managed
-{
+entity Photos : cuid, managed {
     imagen : LargeString;
     mimetype : String(5);
-    doxID : String(50);
     s4OrdenID : String(50);
     s4MaterialID : String(50);
     s4FacturaID : String(50);
+    datos : Composition of many facturasminibackend.Datos on datos.photos = $self;
 }
 
-type dato
-{
+entity Datos : cuid, managed {
+    name : String(100);
+    confidence : Decimal;
+    coordinates : Coordinates;
+    value : String(100);
+    valorAI : String(100);
+    item : Integer;
+    photos : Association to one facturasminibackend.Photos @assert.target : 'facturasminibackend.Photos';
+}
+
+type Coordinates {
+    x : Decimal;
+    y : Decimal;
+    w : Decimal;
+    h : Decimal;
+}
+
+type dato {
     name : String(100);
     coor_x : Decimal;
     coor_y : Decimal;

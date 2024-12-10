@@ -1,33 +1,39 @@
 /**
- * 
+ *
  * @On(event = { "DOX" }, entity = "service.Foto")
  * @param {Object} request - User information, tenant-specific CDS model, headers and query parameters
-*/
+ */
 
-const { post_job, auth_token } = require('./lib_cap_dox')
-const { quickstart } = require('./documentai')
+const { post_job, auth_token } = require("./lib_cap_dox");
+const { process_docai } = require("./documentai");
+const { docai2cap } = require("./parser");
 
 module.exports = async function (request) {
-	const { Fotos } = cds.entities('facturasminibackend');
-	const foto_ID = request.params[0];
+  const { Photos, Datos } = cds.entities("facturasminibackend");
+  const photos_ID = request.params[0];
 
-	console.log('Starting extraction ...');
+  console.log("Starting extraction ...");
 
-	const { imagen, mimetype } = await SELECT.one
-		.from(Fotos)
-		.columns(['imagen', 'mimetype'])
-		.where({ ID: foto_ID })
+  const { imagen, mimetype } = await SELECT.one
+    .from(Photos)
+    .columns(["imagen", "mimetype"])
+    .where({ ID: photos_ID });
 
-	const options = {
-		"clientId": "default",
-		"documentType": "invoice",
-		"schemaName": "facturasCajaChicaS4Esquema4",
-		"templateId": "detect"
-	};
+  const res = await process_docai(imagen, mimetype);
 
-	const title = typeof process.env.cap_dox_key_uaa === 'undefined' ?
-		`${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })} [test]` :
-		`${new Date().toLocaleTimeString("es-US", { hour12: false, timeZone: "America/Asuncion" })}`
+  const cap = await docai2cap(res, photos_ID);
 
-	await quickstart(imagen, mimetype)
-}
+  await INSERT.into(Datos).entries(cap);
+
+  const modifiedAt = new Date();
+
+  await UPDATE.entity(Photos)
+    .data({
+      modifiedAt,
+    })
+    .where({ ID: photos_ID });
+
+  console.log("👍 Procesado en Google Document AI");
+
+  return { job_id: null, modifiedAt };
+};

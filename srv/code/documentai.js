@@ -1,89 +1,56 @@
-/**
- * TODO(developer): Uncomment these variables before running the sample.
- */
-const projectId = '246598648921';
-const location = 'us'; // Format is 'us' or 'eu'
-const processorId = '4646dfa084665f57:process'; // Create processor in Cloud Console
+const projectId = "246598648921";
+const location = "us";
+const processorId = "4646dfa084665f57";
 
 const { DocumentProcessorServiceClient } =
-    require('@google-cloud/documentai').v1;
+  require("@google-cloud/documentai").v1beta3;
 
-// Instantiates a client
-// apiEndpoint regions available: eu-documentai.googleapis.com, us-documentai.googleapis.com (Required if using eu based processor)
-// const client = new DocumentProcessorServiceClient({apiEndpoint: 'eu-documentai.googleapis.com'});
-const client = new DocumentProcessorServiceClient();
+const { DocumentServiceClient } = require("@google-cloud/documentai").v1beta3;
 
-async function quickstart(base64, mimeType) {
-    const { Storage } = require('@google-cloud/storage');
+const client = new DocumentProcessorServiceClient({
+  apiEndpoint: "us-documentai.googleapis.com",
+});
 
-    async function authenticateImplicitWithAdc() {
-        // This snippet demonstrates how to list buckets.
-        // NOTE: Replace the client created below with the client required for your application.
-        // Note that the credentials are not specified when constructing the client.
-        // The client library finds your credentials using ADC.
-        const storage = new Storage({
-            projectId,
-        });
-        const [buckets] = await storage.getBuckets();
-        console.log('Buckets:');
+const documentaiClient = new DocumentServiceClient();
 
-        for (const bucket of buckets) {
-            console.log(`- ${bucket.name}`);
-        }
+async function process_docai(base64, mimeType) {
+  const name = `projects/${projectId}/locations/${location}/processors/${processorId}`;
 
-        console.log('Listed all storage buckets.');
-    }
+  const request = {
+    name,
+    rawDocument: {
+      content: base64,
+      mimeType: `image/${mimeType}`,
+    },
+    fieldMask: ['cdc'],
+  };
 
-    authenticateImplicitWithAdc();
+  const result = await client.processDocument(request);
 
+  return result[0].document.entities;
+}
 
+async function get_schema() {
+  const name = `projects/${projectId}/locations/${location}/processors/${processorId}/dataset/datasetSchema`;
 
-    // The full resource name of the processor, e.g.:
-    // projects/project-id/locations/location/processor/processor-id
-    // You must create new processors in the Cloud Console first
-    const name = `projects/${projectId}/locations/${location}/processors/${processorId}`;
+  const request = {
+    name,
+    visibleFieldsOnly: true
+  };
 
-    const request = {
-        name,
-        rawDocument: {
-            content: base64,
-            mimeType: `application/${mimeType}`,
-        },
-    };
+  const response = await documentaiClient.getDatasetSchema(request);
 
-    // Recognizes text entities in the PDF document
-    const [result] = await client.processDocument(request);
-    const { document } = result;
+  const header = response[0].documentSchema.entityTypes[0].properties.map(item => item.name)
+  const items = response[0].documentSchema.entityTypes[1].properties.map(item => item.name)
 
-    // Get all of the document text as one big string
-    const { text } = document;
-
-    // Extract shards from the text field
-    const getText = textAnchor => {
-        if (!textAnchor.textSegments || textAnchor.textSegments.length === 0) {
-            return '';
-        }
-
-        // First shard in document doesn't have startIndex property
-        const startIndex = textAnchor.textSegments[0].startIndex || 0;
-        const endIndex = textAnchor.textSegments[0].endIndex;
-
-        return text.substring(startIndex, endIndex);
-    };
-
-    // Read the text recognition output from the processor
-    console.log('The document contains the following paragraphs:');
-    const [page1] = document.pages;
-    const { paragraphs } = page1;
-
-    for (const paragraph of paragraphs) {
-        const paragraphText = getText(paragraph.layout.textAnchor);
-        console.log(`Paragraph text:\n${paragraphText}`);
-    }
+  return { header, items }
 }
 
 module.exports = {
-    quickstart: async function (base64, mimeType) {
-        return await quickstart(base64, mimeType); // Obtiene el token de autenticación
-    }
-}
+  process_docai: async function (base64, mimeType) {
+    return await process_docai(base64, mimeType); // Obtiene el token de autenticación
+  },
+  get_schema: async function () {
+    return await get_schema();
+  },
+};

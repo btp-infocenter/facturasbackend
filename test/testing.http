@@ -1,37 +1,44 @@
 @baseUrl = http://localhost:4004
 
-@imgID = 4610e938-0079-41e0-8b98-d8eccbaf7369
+@__imgID__ = 4610e938-0079-41e0-8b98-d8eccbaf7369
+@imgID = 4610e938-0079-41e0-8b98-d8eccbaf1234
+
 
 ###
-GET {{baseUrl}}/service/Fotos
+GET {{baseUrl}}/service/Photos({{imgID}})?$expand=datos
+
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})?$select=modifiedAt
+GET {{baseUrl}}/service/$metadata
+
+
+### DOX
+GET {{baseUrl}}/service/Photos({{imgID}})/service.dox
+
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})/service.dox
-
-###
-PATCH {{baseUrl}}/service/Fotos({{imgID}})
+PATCH {{baseUrl}}/service/Photos({{imgID}})
 Content-Type: application/json
 
 {
     "imagen": "imagen123"  
 }
 
-###
-GET {{baseUrl}}/service/Fotos({{imgID}})/service.upload(imagen='imagen123')
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})/service.datos
+GET {{baseUrl}}/service/Photos({{imgID}})/service.upload(imagen='imagen123')
 
 
 ###
-GET {{baseUrl}}/service/Fotos({{imgID}})/service.enviar 
+GET {{baseUrl}}/service/Photos({{imgID}})/service.datos
+
+
+### ENVIAR A S4
+GET {{baseUrl}}/service/Photos({{imgID}})/service.enviar 
 
 
 ###
-POST {{baseUrl}}/service/Fotos({{imgID}})/service.update_datos 
+POST {{baseUrl}}/service/Photos({{imgID}})/service.update_datos 
 Content-Type: application/json
 
 {

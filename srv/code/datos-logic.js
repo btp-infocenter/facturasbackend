@@ -1,6 +1,6 @@
 /**
  * 
- * @On(event = { "datos" }, entity = "service.Fotos")
+ * @On(event = { "datos" }, entity = "service.Photos")
  * @param {Object} request - User information, tenant-specific CDS model, headers and query parameters
 */
 

@@ -1,38 +1,47 @@
 /**
- * 
- * @On(event = { "update_datos" }, entity = "service.Fotos")
+ *
+ * @On(event = { "update_datos" }, entity = "service.Photos")
  * @param {Object} request - User information, tenant-specific CDS model, headers and query parameters
-*/
-
-const { auth_token, post_ground_truth } = require('./lib_cap_dox');
+ */
 
 module.exports = async function (request) {
-	const { Fotos } = cds.entities('facturasminibackend');
-	const foto_ID = request.params[0];
+  const { Photos, Datos } = cds.entities("facturasminibackend");
+  const foto_ID = request.params[0];
 
-	const headerFields = request.data.headerFields.map(item => JSON.parse(item))
-	const lineItems = request.data.lineItems.map(item => JSON.parse(item))
+  const headerFields = request.data.headerFields.map((item) =>
+    JSON.parse(item)
+  );
+  const lineItems = request.data.lineItems.map((item) => JSON.parse(item));
 
-	const { doxID } = await SELECT.one
-		.from(Fotos)
-		.columns('doxID')
-		.where({
-			ID: foto_ID
-		})
+  for (let header of headerFields) {
+    await UPDATE.entity(Datos)
+      .data({
+        value: header.value,
+      })
+      .where({
+        and: { photos_ID: foto_ID, name: header.name },
+      });
+  }
 
-	const token = await auth_token()
+  for (let line of lineItems) {
+    await UPDATE.entity(Datos)
+      .data({
+        value: line.value,
+      })
+      .where({
+        and: { photos_ID: foto_ID, name: line.name, item: line.orden },
+      });
+  }
 
-	const dox = await post_ground_truth(headerFields, lineItems, doxID, token)
+  const modifiedAt = new Date();
 
-	const modifiedAt = new Date()
+  await UPDATE.entity(Photos)
+    .data({
+      modifiedAt,
+    })
+    .where({
+      ID: foto_ID,
+    });
 
-	await UPDATE.entity(Fotos)
-		.data({
-			modifiedAt
-		})
-		.where({
-			ID: foto_ID
-		})
-
-	return { dox, modifiedAt }
-}
+  return { dox: null, modifiedAt };
+};

@@ -1,10 +1,10 @@
 /**
  * 
- * @On(event = { "upload" }, entity = "service.Fotos")
+ * @On(event = { "upload" }, entity = "service.Photos")
  * @param {Object} request - User information, tenant-specific CDS model, headers and query parameters
 */
 module.exports = async function (request) {
-	const { Fotos } = cds.entities('facturasminibackend');
+	const { Photos } = cds.entities('facturasminibackend');
 	const newImagen = request.data.imagen;
 	const fotos_ID = request.params[0];
 
@@ -12,7 +12,7 @@ module.exports = async function (request) {
 		// Guardar imagen ya existente
 		const oldFoto = await SELECT.one
 			.columns('imagen')
-			.from(Fotos)
+			.from(Photos)
 			.where({ ID: fotos_ID });
 
 		// No agregar información encima de valor nulo
@@ -21,8 +21,8 @@ module.exports = async function (request) {
 
 		// Actualizar imagen
 		await UPDATE
-			.entity(Fotos).set({
-				imagen: imagen // Actualiza la imagen en la entidad Fotos
+			.entity(Photos).set({
+				imagen: imagen // Actualiza la imagen en la entidad Photos
 			}).where({
 				ID: fotos_ID // Condición para actualizar la foto correcta
 			}).then(
